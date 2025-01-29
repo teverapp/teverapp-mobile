@@ -1,0 +1,361 @@
+// import "dart:convert";
+
+// import "package:http/http.dart" as http;
+// import "package:flutter_riverpod/flutter_riverpod.dart";
+// import "package:tever/helpers/general.dart";
+
+// const intilaValue = {
+//   "phoneNumber": null,
+//   "otp": null,
+//   "firstName": null,
+//   "lastName": null,
+//   "userExist": null,
+//   "acessToken": null
+// };
+
+// class AuthControllerNotifier extends StateNotifier<Map<String, dynamic>> {
+//   AuthControllerNotifier({required this.ref}) : super(intilaValue);
+//   final Ref ref;
+
+//   Future<void> signUp() async {
+//     final url = Uri.parse("$baseUrl/api/v1/auth/user/register");
+
+
+
+//     final cleanedUpPhoneNo =
+//         userInputValidation.cleanUpPhoneNumber(state["phoneNumber"]);
+
+//     final requestBody = {
+//       "phoneNumber": cleanedUpPhoneNo.trim(),
+//       "firstName": state["firstName"].toString().trim(),
+//       "lastName": state["lastName"].toString().trim()
+//     };
+
+//     print(cleanedUpPhoneNo);
+
+//     final jsonBody = jsonEncode(requestBody);
+
+//     print(jsonBody);
+
+//     try {
+//       final response = await http.post(
+//         url,
+//         headers: {"Content-Type": "application/json"},
+//         body: jsonBody,
+//       );
+
+//       final responseData = jsonDecode(response.body);
+
+//       if (response.statusCode == 200) {
+//         final token = responseData["data"]["token"];
+
+//         final userId = responseData["data"]["id"];
+
+//         await ref.read(accessTokenProvider.notifier).setToken(token);
+
+//         await ref.read(appInfoProvider.notifier).setUserId(userId);
+
+//         return;
+//       }
+
+//       throw HttpException(responseData["description"]);
+//     } catch (error) {
+//       rethrow;
+//     }
+//   }
+
+//   Future<void> signInWithGoogle(
+//       {required String accessToken, required String displayName}) async {
+//     try {
+//       final url = Uri.parse("$baseUrl/user/login-with-google");
+
+//       final requestBody = {
+//         "token": accessToken,
+//       };
+
+//       final jsonBody = jsonEncode(requestBody);
+
+//       final response = await http.post(
+//         url,
+//         headers: {"Content-Type": "application/json"},
+//         body: jsonBody,
+//       );
+
+//       final responseData = jsonDecode(response.body);
+
+//       if (response.statusCode == 201) {
+//         final token = responseData["data"]["token"];
+
+//         final userId = responseData["data"]["id"];
+
+//         await ref.read(accessTokenProvider.notifier).setToken(token);
+
+//         await ref.read(appInfoProvider.notifier).setUserId(userId);
+
+//         return;
+//       }
+
+//       if (response.statusCode == 404) {
+//         List<String> nameParts = displayName.split(' ');
+
+//         String firstName = nameParts.isNotEmpty ? nameParts[0] : '';
+
+//         String lastName = nameParts.length > 1 ? nameParts[1] : '';
+
+//         state = {
+//           ...state,
+//           "acessToken": accessToken,
+//           "firstName": firstName,
+//           "lastName": lastName,
+//         };
+
+//         throw HttpException("404");
+//       }
+
+//       throw HttpException(responseData["description"]);
+//     } catch (e) {
+//       rethrow;
+//     }
+//   }
+
+//   Future<void> signUpWithGoogle(String otp) async {
+//     try {
+//       final url = Uri.parse("$baseUrl/user/create-account-with-google");
+
+//       final requestBody = {
+//         "phoneNumber": state["phoneNumber"],
+//         "firstName": state["firstName"],
+//         "lastName": state["lastName"],
+//         "otp": otp,
+//         "token": state["acessToken"]
+//       };
+
+//       final jsonBody = jsonEncode(requestBody);
+
+//       final response = await http.post(
+//         url,
+//         headers: {"Content-Type": "application/json"},
+//         body: jsonBody,
+//       );
+
+//       final responseData = jsonDecode(response.body);
+
+//       if (response.statusCode == 201) {
+//         final token = responseData["data"]["token"];
+
+//         final userId = responseData["data"]["id"];
+
+//         await ref.read(accessTokenProvider.notifier).setToken(token);
+
+//         await ref.read(appInfoProvider.notifier).setUserId(userId);
+
+//         return;
+//       }
+
+//       throw HttpException(responseData["description"]);
+//     } catch (e) {
+//       rethrow;
+//     }
+//   }
+
+//   Future<void> signIn(String otp) async {
+//     final url = Uri.parse("$baseUrl/user/login");
+
+//     final InputValidationController userInputValidation =
+//         InputValidationController();
+
+//     final cleanedUpPhoneNo =
+//         userInputValidation.cleanUpPhoneNumber(state["phoneNumber"]);
+
+//     final requestBody = {
+//       "phoneNumber": cleanedUpPhoneNo.trim(),
+//       "code": otp.trim(),
+//     };
+
+//     final jsonBody = jsonEncode(requestBody);
+
+//     try {
+//       final response = await http.post(
+//         url,
+//         headers: {"Content-Type": "application/json"},
+//         body: jsonBody,
+//       );
+
+//       final responseData = jsonDecode(response.body);
+
+//       if (response.statusCode == 201) {
+//         final token = responseData["data"]["token"];
+
+//         final userId = responseData["data"]["id"];
+
+//         print("user id $userId");
+
+//         await ref.read(accessTokenProvider.notifier).setToken(token);
+
+//         await ref.read(appInfoProvider.notifier).setUserId(userId);
+//         return;
+//       }
+
+//       throw HttpException(responseData["description"]);
+//     } catch (error) {
+//       rethrow;
+//     }
+//   }
+
+//   Future<void> resendOTP(String email) async {
+//     Map<String, String> requestBody = {
+//       "email": email.trim(),
+//     };
+
+//     String jsonBody = json.encode(requestBody);
+//     final url = Uri.parse("$baseUrl/resend-otp");
+//     try {
+//       final response = await http.post(
+//         url,
+//         headers: <String, String>{
+//           "Content-Type": "application/json",
+//         },
+//         body: jsonBody,
+//       );
+//       final responseData = json.decode(response.body);
+//       if (response.statusCode == 201) {
+//         return;
+//       }
+
+//       throw HttpException(responseData["description"]);
+//     } catch (error) {
+//       rethrow;
+//     }
+//   }
+
+//   void updateAuthDetails(Map<String, String> authData) {
+//     authData.forEach((key, value) {
+//       state = {...state, key: value};
+//     });
+//   }
+
+//   Future<void> sendPhoneNumerOTPForRegisteredUsers(String phoneNumber) async {
+//     final url = Uri.parse("$baseUrl/otp/send-otp-for-registered-users");
+
+//     Map<String, String> requestBody = {
+//       "phoneNumber": phoneNumber.trim(),
+//     };
+
+//     print("called");
+//     String jsonBody = json.encode(requestBody);
+//     try {
+//       final response = await http.post(
+//         url,
+//         headers: <String, String>{
+//           "Content-Type": "application/json",
+//         },
+//         body: jsonBody,
+//       );
+
+//       final responseData = json.decode(response.body);
+
+//       print("called $responseData");
+//       if (response.statusCode == 201) {
+//         return;
+//       }
+//       if (response.statusCode == 404) {
+//         throw HttpException("404");
+//       }
+
+//       throw HttpException(responseData["description"]);
+//     } catch (error) {
+//       rethrow;
+//     }
+//   }
+
+//   Future<void> sendPhoneNumerOTP(String phoneNumber) async {
+//     final url = Uri.parse("$baseUrl/otp/send-otp");
+
+//     Map<String, String> requestBody = {
+//       "phoneNumber": phoneNumber.trim(),
+//     };
+
+//     String jsonBody = json.encode(requestBody);
+//     try {
+//       final response = await http.post(
+//         url,
+//         headers: <String, String>{
+//           "Content-Type": "application/json",
+//         },
+//         body: jsonBody,
+//       );
+
+//       final responseData = json.decode(response.body);
+//       print(responseData);
+//       if (response.statusCode == 201) {
+//         return;
+//       }
+
+//       throw HttpException(responseData["description"]);
+//     } catch (error) {
+//       rethrow;
+//     }
+//   }
+
+//   Future<void> validatePhoneNumberOtp(String otp) async {
+//     print("validationnn");
+//     final url = Uri.parse("$baseUrl/otp/verify");
+
+//     Map<String, String> requestBody = {
+//       "code": otp.trim(),
+//     };
+
+//     String jsonBody = json.encode(requestBody);
+//     try {
+//       final response = await http.post(
+//         url,
+//         headers: <String, String>{
+//           "Content-Type": "application/json",
+//         },
+//         body: jsonBody,
+//       );
+
+//       final responseData = json.decode(response.body);
+//       print(responseData);
+//       if (response.statusCode == 201) {
+//         return;
+//       }
+
+//       throw HttpException(responseData["description"]);
+//     } catch (error) {
+//       print("validationnn ===> $error");
+//       rethrow;
+//     }
+//   }
+
+//   // Future<void> validateOtp(String otp, String email) async {
+//   //   Map<String, String> requestBody = {"email": email, "otp": otp};
+
+//   //   String jsonBody = json.encode(requestBody);
+//   //   final url = Uri.parse("$baseUrl/confirm-otp");
+
+//   //   try {
+//   //     final response = await http.post(
+//   //       url,
+//   //       headers: <String, String>{
+//   //         "Content-Type": "application/json",
+//   //       },
+//   //       body: jsonBody,
+//   //     );
+//   //     final responseData = json.decode(response.body);
+
+//   //     if (response.statusCode == 201) {
+//   //       return;
+//   //     }
+
+//   //     throw HttpException(responseData["description"]);
+//   //   } catch (error) {
+//   //     rethrow;
+//   //   }
+//   // }
+// }
+
+// final authProvider =
+//     StateNotifierProvider<AuthControllerNotifier, Map<String, dynamic>>((ref) {
+//   return AuthControllerNotifier(ref: ref);
+// });

@@ -1,0 +1,349 @@
+name: tever
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.4
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.8
+  flutter_riverpod: ^2.6.1
+  world_countries: ^2.0.2
+  intl_phone_number_input: ^0.7.4
+  http: ^1.2.2
+  shared_preferences: ^2.3.5
+  flutter_native_splash: ^2.4.2
+  geocoding: ^3.0.0
+  geolocator: ^13.0.2
+  permission_handler: ^11.3.1
+  image_picker: ^1.1.2
+  intl: ^0.20.1
+  file_picker: ^8.1.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: "^0.13.1"
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^4.0.0
+ 
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/logo/splash_logo.png"
+  adaptive_icon_background: "#ffffff"
+  min_sdk_android: 21
+
+flutter_native_splash:
+  android: true
+  ios: true
+  color: "#242424"
+  image: "assets/logo/start_logo.png"
+  android_12:
+      color: "#242424"
+      image: "assets/logo/start_logo.png"
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/image/patterns.png
+    - assets/image/get_started_image.png
+    - assets/image/loading.png
+    - assets/image/trending_image_placeholder.png
+    - assets/image/out_of_stock.png
+    - assets/image/onboarding1.png
+    - assets/image/onboarding2.png
+    - assets/image/onboarding3.png
+    - assets/image/onboarding4.png
+    - assets/image/onboarding5.png
+    - assets/image/onboarding6.png
+    - assets/image/google_pay.png
+    - assets/image/pay_pal.png
+    - assets/image/paystack.png
+    - assets/image/stripe.png
+    - assets/image/line.png
+    - assets/image/leaderboard_star.png
+    - assets/image/success_stories.png
+    - assets/logo/logo_dark.png
+    - assets/logo/logo_light.png
+    - assets/logo/tever_gray_logo.png
+    - assets/logo/tever_outlined_logo.png
+    - assets/logo/logo_light_gray.png
+    - assets/logo/splash_logo.png
+    - assets/icon/ng_flag.png
+    - assets/icon/arrow_down.png
+    - assets/icon/search.png
+    - assets/icon/search_dark.png
+    - assets/icon/search_orange.png
+    - assets/icon/search_light_gray.png
+    - assets/icon/close_circle.png
+    - assets/icon/google.png
+    - assets/icon/mail.png
+    - assets/icon/mail_dark.png
+    - assets/icon/eye_slash.png
+    - assets/icon/eye.png
+    - assets/icon/close_circle_darker.png
+    - assets/icon/home_active.png
+    - assets/icon/home_inactive.png
+    - assets/icon/deals_inactive.png
+    - assets/icon/deals_active.png
+    - assets/icon/orders_inactive.png
+    - assets/icon/orders_active.png
+    - assets/icon/more_inactive.png
+    - assets/icon/more_active.png
+    - assets/icon/add.png
+    - assets/icon/add_green.png
+    - assets/icon/minus.png
+    - assets/icon/minus_square.png
+    - assets/icon/chat.png
+    - assets/icon/notification_bing.png
+    - assets/icon/shop_add.png
+    - assets/icon/profile.png
+    - assets/icon/wallet.png
+    - assets/icon/wallet_dark.png
+    - assets/icon/done.png
+    - assets/icon/arrow_right.png
+    - assets/icon/arrow_right_orange.png
+    - assets/icon/close_circle_thin.png
+    - assets/icon/flash.png
+    - assets/icon/flash_dark.png
+    - assets/icon/arrow_right_dark.png
+    - assets/icon/arrow_right_dark_thick.png
+    - assets/icon/location.png
+    - assets/icon/location_blue.png
+    - assets/icon/location_orange.png
+    - assets/icon/location_gray.png
+    - assets/icon/location_gray_dark.png
+    - assets/icon/location_darker.png
+    - assets/icon/shopping_cart.png
+    - assets/icon/shopping_cart_orange.png
+    - assets/icon/arrow_left.png
+    - assets/icon/drop_down.png
+    - assets/icon/camera.png
+    - assets/icon/camera_orange.png
+    - assets/icon/approved.png
+    - assets/icon/alert_triangle.png
+    - assets/icon/add_circle.png
+    - assets/icon/add_circle_orange.png
+    - assets/icon/add_circle_dark.png
+    - assets/icon/add_orange.png
+    - assets/icon/minus_circle.png
+    - assets/icon/hour_glass.png
+    - assets/icon/gallery.png
+    - assets/icon/gallery_edit.png
+    - assets/icon/gallery_dark.png
+    - assets/icon/microphone.png
+    - assets/icon/microphone_gray.png
+    - assets/icon/like.png
+    - assets/icon/liked.png
+    - assets/icon/message.png
+    - assets/icon/messaged.png
+    - assets/icon/send.png
+    - assets/icon/sent.png
+    - assets/icon/radio_active.png
+    - assets/icon/radio_inactive.png
+    - assets/icon/radio_inactive_circular.png
+    - assets/icon/radio_active_circular.png
+    - assets/icon/angle_right.png
+    - assets/icon/arrow_right_darker.png
+    - assets/icon/star.png
+    - assets/icon/star_empty.png
+    - assets/icon/heart.png
+    - assets/icon/call.png
+    - assets/icon/heart_blue.png
+    - assets/icon/gps.png
+    - assets/icon/caution.png
+    - assets/icon/caution_outline.png
+    - assets/icon/filter_search.png
+    - assets/icon/empty_cart.png
+    - assets/icon/trash.png
+    - assets/icon/calendar.png
+    - assets/icon/calendar_gray.png
+    - assets/icon/attach.png
+    - assets/icon/image.png
+    - assets/icon/bullet.png
+    - assets/icon/file.png
+    - assets/icon/file_gray.png
+    - assets/icon/numbering.png
+    - assets/icon/align_left.png
+    - assets/icon/align_right.png
+    - assets/icon/align_center.png
+    - assets/icon/square.png
+    - assets/icon/underline.png
+    - assets/icon/italic.png
+    - assets/icon/bold.png
+    - assets/icon/global.png
+    - assets/icon/people.png
+    - assets/icon/wifi.png
+    - assets/icon/google_meet.png
+    - assets/icon/zoom.png
+    - assets/icon/zoho.png
+    - assets/icon/link.png
+    - assets/icon/yoga.png
+    - assets/icon/cake.png
+    - assets/icon/dumbbell.png
+    - assets/icon/game.png
+    - assets/icon/music.png
+    - assets/icon/scissor.png
+    - assets/icon/devices.png
+    - assets/icon/devices_orange.png
+    - assets/icon/designtools.png
+    - assets/icon/ticket.png
+    - assets/icon/minus_gray.png
+    - assets/icon/add_gray.png
+    - assets/icon/book.png
+    - assets/icon/edit.png
+    - assets/icon/note_orange.png
+    - assets/icon/share.png
+    - assets/icon/close-circle_red.png
+    - assets/icon/close_circle_light_green.png
+    - assets/icon/close_circle_light_orange.png
+    - assets/icon/close_circle_bg_red.png
+    - assets/icon/radio_circular_inactive.png
+    - assets/icon/profile_orange.png
+    - assets/icon/profile_blue.png
+    - assets/icon/emoji_normal.png
+    - assets/icon/tever_icon.png
+    - assets/icon/profile_gray.png
+    - assets/icon/card_send.png
+    - assets/icon/card_recieve.png
+    - assets/icon/scan.png
+    - assets/icon/scan_orange.png
+    - assets/icon/arrow_right_down.png
+    - assets/icon/verify.png
+    - assets/icon/shield_security.png
+    - assets/icon/arrow_up_green.png
+    - assets/icon/arrow_down_red.png
+    - assets/icon/angle_right_gray.png
+    - assets/icon/document_download.png
+    - assets/icon/master_card.png
+    - assets/icon/check_mark_green.png
+    - assets/icon/emoji_smile.png
+    - assets/icon/gift.png
+    - assets/icon/copy.png
+    - assets/icon/copy_grey.png
+    - assets/icon/facebook.png
+    - assets/icon/twitter.png
+    - assets/icon/instagram.png
+    - assets/icon/twitter.png
+    - assets/icon/snapchat.png
+    - assets/icon/threads.png
+    - assets/icon/whatsapp.png
+    - assets/icon/leaderboard_active.png
+    - assets/icon/leaderboard_inactive.png
+    - assets/icon/success_active.png
+    - assets/icon/success_inactive.png
+    - assets/icon/love.png
+    - assets/icon/fire.png
+    - assets/icon/like_darker.png
+    - assets/icon/shield_tick.png
+    - assets/icon/check_orange.png
+    - assets/icon/x.png
+    - assets/icon/edit_blue.png
+    - assets/icon/tiktok_black.png
+    - assets/icon/twitter_black.png
+    - assets/icon/instagram_black.png
+    - assets/icon/threads_black.png
+    - assets/icon/facebook_black.png
+    - assets/icon/arrow_circle_down.png
+    - assets/icon/tick_circle_dark_green.png
+    - assets/icon/info_close_circle.png
+    - assets/icon/warning_flag.png
+    - assets/icon/info_circle.png
+    - assets/icon/warning_close_circle.png
+    - assets/icon/arrow_right_orange_thin.png
+    - assets/icon/blogs_empty.png
+    - assets/icon/data_empty.png
+    - assets/icon/close_circle_slim.png
+    - assets/icon/close_slim.png
+    - assets/icon/info_circle_thin.png
+    - assets/icon/tick_circle.png
+    
+    
+
+    
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/to/resolution-aware-images
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/to/asset-from-package
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Light-Italic.ttf
+          weight: 300 
+          style: italic
+        - asset: assets/fonts/Inter-Regular.ttf
+          weight: 400 
+        - asset: assets/fonts/Inter-Regular-Italic.ttf
+          weight: 400 
+          style: italic
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-Medium-Italic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600 
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
+    - family: Anybody
+      fonts:
+        - asset: assets/fonts/Anybody-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Anybody-Medium.ttf
+          weight: 500
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/to/font-from-package

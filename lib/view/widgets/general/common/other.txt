@@ -1,0 +1,206 @@
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tever/controller/auth_controller.dart';
+import 'package:tever/controller/user_controller.dart';
+import 'package:tever/extensions/toast_status.dart';
+import 'package:tever/helpers/custom_colors.dart';
+import 'package:tever/model/custom_http_exception.dart';
+import 'package:tever/model/deals.dart';
+import 'package:tever/view/screens/tabs_screen.dart';
+import 'package:tever/view/screens/waiting_screen.dart';
+import 'package:tever/view/widgets/general/common/toast_service.dart';
+import 'package:tever/view/widgets/otp_screen/otp_inputs.dart';
+import 'package:tever/view/widgets/otp_screen/resend_otp.dart';
+
+class NewDealsTypeButtomSheet extends ConsumerStatefulWidget {
+  final String title;
+  final bool? hideBulletPoint;
+  final List<CommonType> listItems;
+  const NewDealsTypeButtomSheet({
+    super.key,
+    required this.title,
+    required this.listItems,
+    this.hideBulletPoint = false,
+  });
+
+  @override
+  ConsumerState<NewDealsTypeButtomSheet> createState() => _NewDealsTypeButtomSheetState();
+}
+
+class _NewDealsTypeButtomSheetState extends ConsumerState<NewDealsTypeButtomSheet> {
+  final CustomColors _customColor = const CustomColors();
+
+  bool _isLoading = false;
+
+  // Future<void> _resendOtp() async {
+  //   return ref.read(authProvider.notifier).sendOnBoardOTP();
+  // }
+
+  Widget _buildDropdownList() {
+    return Column(children: [
+      Expanded(
+          child: ListView.builder(
+                  //shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  itemCount: widget.listItems.length,
+                  itemBuilder: (context, index) {
+                    final isActive =
+                        widget.listItems[index].name == widget.selectedItem;
+
+                    print("haaaaaaaaaaa1 ${_hideBulletPoint}");
+                    return GestureDetector(
+                      onTap: () {
+                        // _onTap(checkValidation: false);
+                        // if (widget.selectItem != null) {
+                        //   widget.selectItem!(
+                        //       value: widget.listItems[index].name,
+                        //       id: widget.listItems[index].id,
+                        //       imageUrl: widget.listItems[index].imageUrl);
+                        // }
+                      },
+                      child: Container(
+                        height: 32,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        color: isActive
+                            ? _customColor.customF9E8CC
+                            : Colors.transparent,
+                        child: Row(
+                          children: [
+                            if (widget.hideBulletPoint!) ...[
+                              Image.asset(
+                                isActive
+                                    ? "assets/icon/radio_active_circular.png"
+                                    : "assets/icon/radio_inactive_circular.png",
+                                height: 16,
+                                width: 16,
+                              ),
+                              const SizedBox(width: 8),
+                            ],
+                            Text(
+                              widget.listItems[index].name.toString(),
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: _customColor.custom242424,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                )),
+    ]);
+  }
+
+  void _showToast({required String message, required String status}) {
+    if (mounted) {
+      ToastService.showToast(
+        context: context,
+        message: message,
+        status: status,
+      );
+    }
+  }
+
+  Future<void> _submit(String otp) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await ref.read(authProvider.notifier).verifyOnBoardOtp(
+            otp: otp,
+            action: "onboard",
+          );
+
+      ref.read(authProvider.notifier).resetAuthData();
+
+      if (mounted) {
+        if (ModalRoute.of(context)?.isCurrent == true) {
+          Navigator.of(context).pop();
+        }
+
+        ref
+            .read(userDataProvider.notifier)
+            .updateField("hasSetUpProfile", true);
+
+        _showToast(
+            message: "Your profile has been updated successfully!",
+            status: ToastStatus.success.name);
+
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const TabsScreen()),
+          );
+        }
+      }
+    } on CustomHttpException catch (error) {
+      if (mounted) {
+        ToastService.showToast(
+            context: context,
+            message: error.toString(),
+            status: ToastStatus.error.name);
+      }
+    } catch (error) {
+      String errorMessage = "Something went wrong!";
+
+      if (error is SocketException || error is HandshakeException) {
+        errorMessage = "Network error, Please try again later. ";
+      }
+      _showToast(message: errorMessage, status: ToastStatus.error.name);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context).size;
+
+    final height = mediaQuery.height * 0.7;
+    return Container(
+      width: double.infinity,
+      height: height,
+      padding: const EdgeInsets.only(top: 17, left: 16, right: 16),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Align(
+            alignment: Alignment.center,
+            child: Container(
+              height: 5,
+              width: 120,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                color: _customColor.custom6D6D6D,
+              ),
+            ),
+          ),
+          const SizedBox(height: 30),
+          Text(
+            widget.title,
+            style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w500,
+                fontFamily: "Anybody",
+                color: _customColor.custom242424),
+          ),
+          const SizedBox(height: 4),
+        ],
+      ),
+    );
+  }
+}
