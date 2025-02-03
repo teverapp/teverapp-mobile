@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tever/controller/app_resource_controller.dart';
 
 import 'package:tever/controller/new_deal_controller.dart';
 import 'package:tever/extensions/deals_tab.dart';
@@ -37,15 +38,15 @@ class _NewDealsSubcategoryBottomSheetState
     }
   }
 
-  Future<void> _fetchDealSubCategoryList() async {
+  Future<void> _fetchDealSubCategoryList({required String? categoryId}) async {
     setState(() {
       _dealSubCategoryListIsLoading = true;
       _dealSubCategoryListErrorMessage = null;
     });
 
     try {
-      await ref.read(newDealDataProvider.notifier).fetchResources(
-          type: DealsDropList.dealSubcategories.value, fetchItemWithId: true);
+      await ref.read(appResourceProvider.notifier).fetchResources(
+          type: DealsDropList.dealSubcategories.value, id: categoryId);
     } on CustomHttpException catch (error) {
       setState(() {
         _dealSubCategoryListErrorMessage = error.toString();
@@ -69,17 +70,19 @@ class _NewDealsSubcategoryBottomSheetState
   }
 
   void _addMoreItemsToSUbCat(CommonType value) {
-    ref.read(newDealDataProvider.notifier).addToSubCategoryList(subCat: value);
+    ref.read(appResourceProvider.notifier).addToSubCategoryList(subCat: value);
   }
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final appResourceData = ref.watch(appResourceProvider);
+
       final newDealData = ref.watch(newDealDataProvider);
 
-      if (newDealData.dealDetailsSubCategory.isEmpty) {
-        _fetchDealSubCategoryList();
+      if (appResourceData.fetchedDealDetailsSubCategory.isEmpty) {
+        _fetchDealSubCategoryList(categoryId: newDealData.categoryId);
       }
     });
   }
@@ -87,6 +90,8 @@ class _NewDealsSubcategoryBottomSheetState
   @override
   Widget build(BuildContext context) {
     final newDealData = ref.watch(newDealDataProvider);
+
+    final appResourceData = ref.watch(appResourceProvider);
 
     final mediaQuery = MediaQuery.of(context).size;
 
@@ -134,14 +139,15 @@ class _NewDealsSubcategoryBottomSheetState
               showSearchField: true,
               addMoreItemsToList: _addMoreItemsToSUbCat,
               hasSelected: newDealData.subCategoryId != null,
-              dropdownItems: newDealData.dealDetailsSubCategory,
+              dropdownItems: appResourceData.fetchedDealDetailsSubCategory,
               selectItem: _selectSubCategory,
               selectedItem: newDealData.subCategoryId != null
                   ? newDealData.subCategory.toString()
                   : "Select sub category",
               errorMessage: _dealSubCategoryListErrorMessage,
               isLoading: _dealSubCategoryListIsLoading,
-              retry: _fetchDealSubCategoryList,
+              retry: () =>
+                  _fetchDealSubCategoryList(categoryId: newDealData.categoryId),
             )
           ],
         ),

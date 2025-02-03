@@ -2,19 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tever/controller/auth_controller.dart';
 import 'package:tever/controller/user_controller.dart';
+import 'package:tever/extensions/toast_status.dart';
 import 'package:tever/helpers/custom_colors.dart';
 import 'package:tever/view/screens/complete_your_profile_screen.dart';
 import 'package:tever/view/screens/new_deal_screen.dart';
 import 'package:tever/view/screens/new_event_screen.dart';
 import 'package:tever/view/screens/profile_details_screen.dart';
 import 'package:tever/view/screens/sign_in_screen.dart';
+import 'package:tever/view/widgets/general/common/toast_service.dart';
 
 class Welcome extends ConsumerWidget {
   const Welcome({super.key});
 
   final CustomColors _customColors = const CustomColors();
 
-  void _navigate({required Widget screen, required BuildContext context}) {
+  void _showToast(
+      {required BuildContext context, required String errorMessage}) {
+    ToastService.showToast(
+      context: context,
+      message: errorMessage,
+      status: ToastStatus.error.name,
+    );
+  }
+
+  void _navigate(
+      {required Widget screen,
+      required BuildContext context,
+      required String? errorMessage}) {
+    if (errorMessage != null) {
+      _showToast(context: context, errorMessage: errorMessage);
+    }
+
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => screen,
@@ -113,6 +131,11 @@ class Welcome extends ConsumerWidget {
           children: [
             buildCard(
                 onTap: () => _navigate(
+                    errorMessage: authInfo.isGuest
+                        ? "Please login to create a deal"
+                        : userData.firstName == null
+                            ? "Please complete your profile to create a deal"
+                            : null,
                     screen: authInfo.isGuest
                         ? const SignInScreen()
                         : userData.firstName == null
@@ -125,6 +148,11 @@ class Welcome extends ConsumerWidget {
             const SizedBox(width: 8),
             buildCard(
                 onTap: () => _navigate(
+                    errorMessage: authInfo.isGuest
+                        ? "Please login to create an event"
+                        : userData.firstName == null
+                            ? "Please complete your profile to create an event"
+                            : null,
                     screen: authInfo.isGuest
                         ? const SignInScreen()
                         : userData.firstName == null

@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tever/controller/new_deal_controller.dart';
 import 'package:tever/helpers/custom_colors.dart';
+import 'package:tever/model/coordinate.dart';
 import 'package:tever/model/country.dart';
 import 'package:tever/view/widgets/general/common/custom_input_selection_button.dart';
 import 'package:tever/view/widgets/general/common/enter_address_labeled_text_field.dart';
 import 'package:tever/view/widgets/new_deal_screen.dart/terms_and_policy_bottom_sheet.dart';
 import 'package:tever/view/widgets/new_deal_screen.dart/terms_and_policy_card.dart';
+import 'package:tever/view/widgets/new_event_screen/address_list_bottom_sheet.dart';
 import 'package:tever/view/widgets/sign_up_screen/email_input.dart';
 import 'package:tever/view/widgets/sign_up_screen/phone_input.dart';
 
@@ -26,8 +28,7 @@ class SetTerms extends ConsumerStatefulWidget {
 class _SetTermsState extends ConsumerState<SetTerms> {
   final CustomColors _customColor = const CustomColors();
 
-  final TextEditingController _contactInfoAddressController =
-      TextEditingController();
+  int _selectedIndex = 0;
 
   final TextEditingController _contactInfoBrandNameController =
       TextEditingController();
@@ -41,13 +42,24 @@ class _SetTermsState extends ConsumerState<SetTerms> {
   final TextEditingController _contactInfoEmailController =
       TextEditingController();
 
-  int _selectedIndex = -1;
-
-  //String? ,
-  //String? ,
-  //String? ,
-  //bool? ,
-  //String? ,
+  void _showAddressBottomSheet({String? searchInput}) {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(30),
+        ),
+      ),
+      context: context,
+      builder: (_) {
+        return AddressListButtomSheet(
+          title: "Enter address",
+          intialSearchInput: searchInput,
+          selectLocation: _selectEventLocation,
+        );
+      },
+    );
+  }
 
   void _contactInfoBrandNameOnChangeHandler(String value) {
     ref
@@ -61,10 +73,10 @@ class _SetTermsState extends ConsumerState<SetTerms> {
         .updateNewDeal("contactInfoAboutBrand", value);
   }
 
-  void _contactInfoAddressOnChangeHandler(String value) {
+  void _selectEventLocation({required Coordinate location}) {
     ref
         .read(newDealDataProvider.notifier)
-        .updateNewDeal("contactInfoAddress", value);
+        .updateNewDeal("contactInfoAddress", location);
   }
 
   void _emailValidator(bool? hasError) {
@@ -123,8 +135,6 @@ class _SetTermsState extends ConsumerState<SetTerms> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final newDealData = ref.watch(newDealDataProvider);
 
-      _contactInfoAddressController.text = newDealData.contactInfoAddress ?? "";
-
       _contactInfoBrandNameController.text =
           newDealData.contactInfoBrandName ?? "";
 
@@ -141,7 +151,6 @@ class _SetTermsState extends ConsumerState<SetTerms> {
   @override
   void dispose() {
     super.dispose();
-    _contactInfoAddressController.dispose();
 
     _contactInfoAboutBrandController.dispose();
 
@@ -172,7 +181,7 @@ class _SetTermsState extends ConsumerState<SetTerms> {
         newDealsData.contactInfoAboutBrand!.isNotEmpty &&
         newDealsData.contactInfoPhoneNumber!.isNotEmpty &&
         newDealsData.contactInfoEmail!.isNotEmpty &&
-        newDealsData.contactInfoAddress!.isNotEmpty &&
+        newDealsData.contactInfoAddress != null &&
         hasValidTermsAndPolicies;
 
     print(
@@ -541,13 +550,24 @@ class _SetTermsState extends ConsumerState<SetTerms> {
                                   validator: _emailValidator,
                                 ),
                                 const SizedBox(height: 22),
-                                EnterAddressLabeledTextField(
-                                  controller: _contactInfoAddressController,
-                                  onChange: _contactInfoAddressOnChangeHandler,
+                                CustomInputSelectionButton(
+                                  hideTrailingIcon: true,
+                                  selectedItem:
+                                      newDealsData.contactInfoAddress != null
+                                          ? newDealsData
+                                              .contactInfoAddress!.locationName
+                                              .toString()
+                                          : "Enter your address",
+                                  hasSelected:
+                                      newDealsData.contactInfoAddress != null,
+                                  onTap: () => _showAddressBottomSheet(
+                                    searchInput: newDealsData
+                                        .contactInfoAddress?.locationName,
+                                  ),
                                 ),
                                 const SizedBox(height: 10),
                                 Text(
-                                  "Enter the address of your store/business location or tap or \"Use my current location\"",
+                                  "Enter the address of your store/business location",
                                   style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400,

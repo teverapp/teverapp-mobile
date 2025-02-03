@@ -26,12 +26,6 @@ class _NewEventScreenState extends State<NewEventScreen> {
     });
   }
 
-  void _edit() {
-    setState(() {
-      _selectedPageIndex = 0;
-    });
-  }
-
   void _popScreen() {
     Navigator.of(context).pop();
   }

@@ -1,3 +1,5 @@
+import 'package:tever/model/coordinate.dart';
+
 class User {
   bool? hasSetupCheckList;
   bool? isEmailVerified;
@@ -30,9 +32,7 @@ class User {
   dynamic planExpiryDate;
   dynamic preferences;
   dynamic kycStatus;
-  String? currentAddress;
-  String? latitude;
-  String? longitude;
+  Coordinate? currentAddress;
 
   User({
     this.hasSetupCheckList,
@@ -65,8 +65,6 @@ class User {
     this.preferences,
     this.kycStatus,
     this.currentAddress,
-    this.latitude,
-    this.longitude,
     this.isEmailVerified,
     this.isPhoneNumberVerified,
   });
@@ -103,8 +101,6 @@ class User {
       preferences: null,
       kycStatus: null,
       currentAddress: null,
-      longitude: null,
-      latitude: null,
       isEmailVerified: false,
       isPhoneNumberVerified: false,
     );
@@ -140,7 +136,7 @@ class User {
     dynamic planExpiryDate,
     dynamic preferences,
     dynamic kycStatus,
-    String? currentAddress,
+    Coordinate? currentAddress,
     String? latitude,
     String? longitude,
     bool? isEmailVerified,
@@ -182,8 +178,6 @@ class User {
         preferences: preferences ?? this.preferences,
         kycStatus: kycStatus ?? this.kycStatus,
         currentAddress: currentAddress ?? this.currentAddress,
-        longitude: longitude ?? this.longitude,
-        latitude: latitude ?? this.latitude,
         isEmailVerified: isEmailVerified ?? this.isEmailVerified,
         isPhoneNumberVerified:
             isPhoneNumberVerified ?? this.isPhoneNumberVerified);

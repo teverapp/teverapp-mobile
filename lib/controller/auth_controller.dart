@@ -148,15 +148,13 @@ class AuthControllerNotifier extends StateNotifier<Auth> {
         }
 
         if (!isPhoneConfirmed && AuthStatus.phone.value == state.authType) {
-          print("has not confirmed phone number");
           await sendOnBoardOTP();
 
           throw CustomHttpException(
               AuthStatus.hasNotConfirmedPhoneNumber.value);
         }
-//9066231540
+//9037865253
         if (!hasPassword) {
-          print("has not set password -> ${responseData["hasPassword"]}");
           await sendOnBoardOTP();
 
           final error = AuthStatus.email.value == state.authType

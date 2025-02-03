@@ -6,10 +6,12 @@ class ProfileButton extends StatelessWidget {
   final String title;
   final String? subTitle;
   final VoidCallback? onTap;
+  final Color? iconColor;
   const ProfileButton(
       {super.key,
       required this.icon,
       required this.title,
+      this.iconColor,
       this.subTitle,
       this.onTap});
 
@@ -32,11 +34,25 @@ class ProfileButton extends StatelessWidget {
           children: [
             Row(
               children: [
-                Image.asset(
-                  "assets/icon/$icon",
-                  height: 20,
-                  width: 20,
-                ),
+                //Change image color
+                if (iconColor != null)
+                  ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                      iconColor!,
+                      BlendMode.srcATop,
+                    ),
+                    child: Image.asset(
+                      "assets/icon/$icon",
+                      height: 20,
+                      width: 20,
+                    ),
+                  ),
+                if (iconColor == null)
+                  Image.asset(
+                    "assets/icon/$icon",
+                    height: 20,
+                    width: 20,
+                  ),
                 const SizedBox(
                   width: 16,
                 ),

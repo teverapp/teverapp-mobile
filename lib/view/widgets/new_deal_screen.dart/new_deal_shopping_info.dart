@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tever/controller/app_resource_controller.dart';
 
 import 'package:tever/controller/new_deal_controller.dart';
 import 'package:tever/extensions/deals_tab.dart';
@@ -89,25 +90,16 @@ class _NewDealShoppingInfoState extends ConsumerState<NewDealShoppingInfo> {
         .updateNewDeal("shippingFromCountry", value);
   }
 
-  void _showCountriesFromBottomSheet(
+  //type: DealsDropList.shippingFrom.name,
+
+  void _showCountryToBottomSheet(
       {required type,
       required Function(
               {required String value, required String id, String? imageUrl})
           selectCountry,
-      required bool fetchedWithId}) {
-    if (fetchedWithId) {
-      final newDealData = ref.watch(newDealDataProvider);
+      String? id}) {
+    print("_showCountryToBottomSheet $id");
 
-      final isValid = newDealData.shippingToContinentId != null;
-
-      if (!isValid) {
-        _showToast(
-            message: "Please select a continent!",
-            status: ToastStatus.error.name);
-
-        return;
-      }
-    }
     showModalBottomSheet(
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -119,7 +111,43 @@ class _NewDealShoppingInfoState extends ConsumerState<NewDealShoppingInfo> {
       builder: (_) {
         return CountriesButtomSheet(
           type: type,
-          fetchWithId: fetchedWithId,
+          id: id,
+          selectCountry: selectCountry,
+        );
+      },
+    );
+  }
+
+  void _showCountryToUsingContinentIdBottomSheet(
+      {required type,
+      required Function(
+              {required String value, required String id, String? imageUrl})
+          selectCountry,
+      String? id}) {
+    final newDealData = ref.watch(newDealDataProvider);
+
+    final isValid = newDealData.shippingToContinentId != null;
+
+    if (!isValid) {
+      _showToast(
+          message: "Please select a continent!",
+          status: ToastStatus.error.name);
+
+      return;
+    }
+
+    showModalBottomSheet(
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(30),
+        ),
+      ),
+      context: context,
+      builder: (_) {
+        return CountriesButtomSheet(
+          type: type,
+          id: id,
           selectCountry: selectCountry,
         );
       },
@@ -252,9 +280,9 @@ class _NewDealShoppingInfoState extends ConsumerState<NewDealShoppingInfo> {
                 const SizedBox(height: 9),
                 CustomInputSelectionButton(
                   hasSelected: newDealData.shippingFromCountry != null,
-                  onTap: () => _showCountriesFromBottomSheet(
+                  onTap: () => _showCountryToBottomSheet(
                       type: DealsDropList.shippingFrom.name,
-                      fetchedWithId: false,
+                      //  id: newDealData.shippingToContinentId,
                       selectCountry: _selectShipFromCountry),
                   selectedItem: newDealData.shippingFromCountry != null
                       ? newDealData.shippingFromCountry.toString()
@@ -325,15 +353,25 @@ class _NewDealShoppingInfoState extends ConsumerState<NewDealShoppingInfo> {
                   const SizedBox(height: 8),
                   CustomInputSelectionButton(
                     key: const Key("country"),
-                    onTap: () => _showCountriesFromBottomSheet(
-                      type: showContinentInput
-                          ? DealsDropList.multipleSelection.name
-                          : DealsDropList.shippingTo.name,
-                      fetchedWithId: showContinentInput,
-                      selectCountry: showContinentInput
-                          ? _addToSelectedCountries
-                          : _selectShipToCountry,
-                    ),
+                    onTap: () => !showContinentInput
+                        ? _showCountryToBottomSheet(
+                            type: showContinentInput
+                                ? DealsDropList.multipleSelection.name
+                                : DealsDropList.shippingTo.name,
+                            id: newDealData.shippingToContinentId,
+                            selectCountry: showContinentInput
+                                ? _addToSelectedCountries
+                                : _selectShipToCountry,
+                          )
+                        : _showCountryToUsingContinentIdBottomSheet(
+                            type: showContinentInput
+                                ? DealsDropList.multipleSelection.name
+                                : DealsDropList.shippingTo.name,
+                            id: newDealData.shippingToContinentId,
+                            selectCountry: showContinentInput
+                                ? _addToSelectedCountries
+                                : _selectShipToCountry,
+                          ),
                     hasSelected: showContinentInput
                         ? false
                         : newDealData.shippingToCountry != null,

@@ -103,7 +103,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           ),
         ),
       ),
-      home: NewEventScreen(),
+      home: SplashScreen(),
     );
   }
 }

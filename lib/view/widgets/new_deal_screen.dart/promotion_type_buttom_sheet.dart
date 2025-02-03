@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tever/controller/app_resource_controller.dart';
 import 'package:tever/controller/new_deal_controller.dart';
 import 'package:tever/extensions/deals_tab.dart';
 import 'package:tever/helpers/custom_colors.dart';
 import 'package:tever/model/custom_http_exception.dart';
-import 'package:tever/model/new_deal.dart';
 import 'package:tever/view/widgets/new_deal_screen.dart/new_deal_bottom_sheet_list.dart';
 
 class PromotionTypeButtomSheet extends ConsumerStatefulWidget {
@@ -43,9 +43,8 @@ class _PromotionTypeButtomSheetState
     });
 
     try {
-      await ref.read(newDealDataProvider.notifier).fetchResources(
+      await ref.read(appResourceProvider.notifier).fetchResources(
             type: DealsDropList.promotionTypes.value,
-            fetchItemWithId: false,
           );
     } on CustomHttpException catch (error) {
       setState(() {
@@ -73,9 +72,9 @@ class _PromotionTypeButtomSheetState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final newDealData = ref.watch(newDealDataProvider);
+      final appResourceData = ref.watch(appResourceProvider);
 
-      if (newDealData.fetchedPromotionType.isEmpty) {
+      if (appResourceData.fetchedPromotionTypes.isEmpty) {
         _fetchPromotionType();
       }
     });
@@ -84,6 +83,8 @@ class _PromotionTypeButtomSheetState
   @override
   Widget build(BuildContext context) {
     final newDealData = ref.read(newDealDataProvider);
+
+    final appResourceData = ref.watch(appResourceProvider);
 
     final mediaQuery = MediaQuery.of(context).size;
 
@@ -127,7 +128,7 @@ class _PromotionTypeButtomSheetState
             NewDealBottomSheetList(
               showSearchField: true,
               hasSelected: newDealData.dealPromotionType != null,
-              dropdownItems: newDealData.fetchedPromotionType,
+              dropdownItems: appResourceData.fetchedPromotionTypes,
               selectItem: _selectPromotionType,
               selectedItem: newDealData.dealPromotionType != null
                   ? newDealData.dealPromotionType.toString()

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tever/controller/app_resource_controller.dart';
 import 'package:tever/controller/new_deal_controller.dart';
 import 'package:tever/extensions/deals_tab.dart';
 import 'package:tever/extensions/toast_status.dart';
@@ -42,10 +43,10 @@ class _SpaceLocationCardState extends ConsumerState<SpaceLocationCard> {
   }
 
   bool _validateCountry() {
-    final newDealData = ref.watch(newDealDataProvider);
+    final newDealData = ref.watch(appResourceProvider);
 
-    if (newDealData.countries.isEmpty) {
-      _fetchCountryList(fetchItemWithId: false);
+    if (newDealData.fetchedCountries.isEmpty) {
+      _fetchCountryList();
     }
 
     return true;
@@ -54,10 +55,12 @@ class _SpaceLocationCardState extends ConsumerState<SpaceLocationCard> {
   bool _validateState() {
     final newDealData = ref.watch(newDealDataProvider);
 
+    final appResourceData = ref.watch(appResourceProvider);
+
     final isValid = newDealData.selectedCountryFromAllCountryId != null;
 
-    if (isValid && newDealData.fetchedStates.isEmpty) {
-      _fetchStateList(fetchItemWithId: true);
+    if (isValid && appResourceData.fetchedStates.isEmpty) {
+      _fetchStateList(id: newDealData.selectedCountryFromAllCountryId);
     }
 
     if (!isValid) {
@@ -88,15 +91,16 @@ class _SpaceLocationCardState extends ConsumerState<SpaceLocationCard> {
         .updateNewDeal("selectedCountryFromAllCountryId", id);
   }
 
-  Future<void> _fetchCountryList({required bool fetchItemWithId}) async {
+  Future<void> _fetchCountryList() async {
     setState(() {
       _countryListIsLoading = true;
       _countryListErrorMessage = null;
     });
 
     try {
-      await ref.read(newDealDataProvider.notifier).fetchResources(
-          type: DealsDropList.country.value, fetchItemWithId: false);
+      await ref
+          .read(appResourceProvider.notifier)
+          .fetchResources(type: DealsDropList.country.value);
     } on CustomHttpException catch (error) {
       setState(() {
         _countryListErrorMessage = error.toString();
@@ -119,7 +123,7 @@ class _SpaceLocationCardState extends ConsumerState<SpaceLocationCard> {
     }
   }
 
-  Future<void> _fetchStateList({required bool fetchItemWithId}) async {
+  Future<void> _fetchStateList({required String? id}) async {
     print("sttaed calllled");
     setState(() {
       _stateListErrorMessage = null;
@@ -127,8 +131,9 @@ class _SpaceLocationCardState extends ConsumerState<SpaceLocationCard> {
     });
 
     try {
-      await ref.read(newDealDataProvider.notifier).fetchResources(
-          type: DealsDropList.state.value, fetchItemWithId: fetchItemWithId);
+      await ref
+          .read(appResourceProvider.notifier)
+          .fetchResources(type: DealsDropList.state.value, id: id);
     } on CustomHttpException catch (error) {
       setState(() {
         _stateListErrorMessage = error.toString();
@@ -176,6 +181,8 @@ class _SpaceLocationCardState extends ConsumerState<SpaceLocationCard> {
   Widget build(BuildContext context) {
     final newDealData = ref.watch(newDealDataProvider);
 
+    final appResourceData = ref.watch(appResourceProvider);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -208,14 +215,14 @@ class _SpaceLocationCardState extends ConsumerState<SpaceLocationCard> {
             key: const Key("country"),
             validateBeforeShowingList: _validateCountry,
             hasSelected: newDealData.spaceLocationCountry != null,
-            dropdownItems: newDealData.countries,
+            dropdownItems: appResourceData.fetchedCountries,
             selectItem: _selectCountry,
             selectedItem: newDealData.spaceLocationCountry != null
                 ? newDealData.spaceLocationCountry.toString()
                 : "Choose category",
             errorMessage: _countryListErrorMessage,
             isLoading: _countryListIsLoading,
-            retry: () => _fetchCountryList(fetchItemWithId: false),
+            retry: () => _fetchCountryList(),
           ),
           const SizedBox(height: 13),
           Text(
@@ -347,14 +354,15 @@ class _SpaceLocationCardState extends ConsumerState<SpaceLocationCard> {
             key: const Key("state"),
             hideBulletPoint: true,
             hasSelected: newDealData.spaceLocationState != null,
-            dropdownItems: newDealData.fetchedStates,
+            dropdownItems: appResourceData.fetchedStates,
             selectItem: _selectState,
             selectedItem: newDealData.spaceLocationState != null
                 ? newDealData.spaceLocationState.toString()
                 : "Choose state",
             errorMessage: _stateListErrorMessage,
             isLoading: _stateListIsLoading,
-            retry: () => _fetchStateList(fetchItemWithId: true),
+            retry: () => _fetchStateList(
+                id: newDealData.selectedCountryFromAllCountryId),
           ),
         ],
       ),

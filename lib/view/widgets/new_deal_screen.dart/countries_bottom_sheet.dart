@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tever/controller/app_resource_controller.dart';
 import 'package:tever/controller/new_deal_controller.dart';
 import 'package:tever/extensions/deals_tab.dart';
 import 'package:tever/helpers/custom_colors.dart';
@@ -14,12 +15,12 @@ class CountriesButtomSheet extends ConsumerStatefulWidget {
       {required String value,
       required String id,
       String? imageUrl}) selectCountry;
-  final bool fetchWithId;
+  final String? id;
 
   const CountriesButtomSheet(
       {super.key,
       required this.selectCountry,
-      required this.fetchWithId,
+      required this.id,
       required this.type});
 
   @override
@@ -43,15 +44,16 @@ class _CountriesButtomSheetState extends ConsumerState<CountriesButtomSheet> {
     }
   }
 
-  Future<void> _fetchCountryList({required bool fetchItemWithId}) async {
+  Future<void> _fetchCountryList({required dynamic id}) async {
     setState(() {
       _countryListIsLoading = true;
       _countryListErrorMessage = null;
     });
 
     try {
-      await ref.read(newDealDataProvider.notifier).fetchResources(
-          type: DealsDropList.country.value, fetchItemWithId: fetchItemWithId);
+      await ref
+          .read(appResourceProvider.notifier)
+          .fetchResources(type: DealsDropList.country.value, id: id);
     } on CustomHttpException catch (error) {
       setState(() {
         _countryListErrorMessage = error.toString();
@@ -77,17 +79,20 @@ class _CountriesButtomSheetState extends ConsumerState<CountriesButtomSheet> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final newDealData = ref.watch(newDealDataProvider);
+      // final newDealData = ref.watch(appResourceProvider);
 
-      if (newDealData.countries.isEmpty) {
-        _fetchCountryList(fetchItemWithId: widget.fetchWithId);
-      }
+      // if (newDealData.fetchedCountries.isEmpty) {
+      //   _fetchCountryList(id: widget.id);
+      // }
+      _fetchCountryList(id: widget.id);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final newDealData = ref.read(newDealDataProvider);
+
+    final appResourceData = ref.read(appResourceProvider);
 
     final mediaQuery = MediaQuery.of(context).size;
 
@@ -142,13 +147,12 @@ class _CountriesButtomSheetState extends ConsumerState<CountriesButtomSheet> {
               hasSelected: widget.type == DealsDropList.shippingFrom.name
                   ? newDealData.shippingFromCountry != null
                   : newDealData.shippingToCountry != null,
-              dropdownItems: newDealData.countries,
+              dropdownItems: appResourceData.fetchedCountries,
               selectItem: _selectCountry,
               selectedItem: selectedItem,
               errorMessage: _countryListErrorMessage,
               isLoading: _countryListIsLoading,
-              retry: () =>
-                  _fetchCountryList(fetchItemWithId: widget.fetchWithId))
+              retry: () => _fetchCountryList(id: widget.id))
         ],
       ),
     );

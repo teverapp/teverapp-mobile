@@ -75,9 +75,9 @@ class UserControllerNotifier extends StateNotifier<User> {
       "bacisDetails": {
         "firstName": firstName,
         "lastName": lastName,
-        "long": state.longitude,
-        "lat": state.longitude,
-        "physicalAdd": state.currentAddress,
+        "long": state.currentAddress!.locationLongitude,
+        "lat": state.currentAddress!.locationLatiude,
+        "physicalAdd": state.currentAddress!.locationName,
         if (!state.isPhoneNumberVerified!) "phoneNumber": phoneNumber,
         if (!state.isEmailVerified!) "email": email,
       }

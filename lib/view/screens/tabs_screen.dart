@@ -9,6 +9,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
 import 'package:tever/helpers/custom_colors.dart';
+import 'package:tever/model/coordinate.dart';
 import 'package:tever/model/custom_http_exception.dart';
 import 'package:tever/view/screens/error_screen.dart';
 import 'package:tever/view/screens/sign_in_screen.dart';
@@ -117,23 +118,29 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
       position.longitude,
     );
 
-    Placemark place = placemarks[0];
+    if (placemarks.isNotEmpty) {
+      Placemark place = placemarks[0];
 
-    print(
-        " -->> ${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.postalCode}, ${place.country}");
-    final currentAddress =
-        "${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.postalCode}, ${place.country}";
+      // Extracting values safely to avoid null issues
+      String street = place.street ?? "";
+      String locality = place.locality ?? "";
+      String adminArea = place.administrativeArea ?? "";
+      String postalCode = place.postalCode ?? "";
+      String country = place.country ?? "";
 
-    ref
-        .read(userDataProvider.notifier)
-        .updateField("latitude", position.latitude.toString());
-    ref
-        .read(userDataProvider.notifier)
-        .updateField("longitude", position.longitude.toString());
+      // Formatting the address properly
+      String formattedAddress =
+          "$street${locality.isNotEmpty ? ', $locality' : ''}${postalCode.isNotEmpty ? ' $postalCode' : ''}${adminArea.isNotEmpty ? ', $adminArea' : ''}${country.isNotEmpty ? ', $country' : ''}";
 
-    ref
-        .read(userDataProvider.notifier)
-        .updateField("currentAddress", currentAddress);
+      ref.read(userDataProvider.notifier).updateField(
+            "currentAddress",
+            Coordinate(
+              locationLatiude: position.latitude,
+              locationLongitude: position.longitude,
+              locationName: formattedAddress,
+            ),
+          );
+    }
   }
 
   @override

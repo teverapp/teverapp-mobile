@@ -190,7 +190,8 @@ class _CountryBottomSheetState extends ConsumerState<CountryBottomSheet> {
     final double height = _useMediaHeight ? mediaQuery.height * 0.9 : 270;
 
     return SafeArea(
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         width: double.infinity,
         height: height,
         padding: const EdgeInsets.only(top: 17, left: 16, right: 16),

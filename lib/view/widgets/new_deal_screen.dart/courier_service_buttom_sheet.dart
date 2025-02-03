@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tever/controller/app_resource_controller.dart';
 import 'package:tever/controller/new_deal_controller.dart';
 import 'package:tever/extensions/deals_tab.dart';
 import 'package:tever/helpers/custom_colors.dart';
@@ -50,9 +51,8 @@ class _CourierServiceButtomSheetState
     });
 
     try {
-      await ref.read(newDealDataProvider.notifier).fetchResources(
+      await ref.read(appResourceProvider.notifier).fetchResources(
             type: DealsDropList.couriers.value,
-            fetchItemWithId: false,
           );
     } on CustomHttpException catch (error) {
       setState(() {
@@ -80,9 +80,9 @@ class _CourierServiceButtomSheetState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final newDealData = ref.watch(newDealDataProvider);
+      final appResourceData = ref.watch(appResourceProvider);
 
-      if (newDealData.fetchedCourierService.isEmpty) {
+      if (appResourceData.fetchedCourierServices.isEmpty) {
         _fetchCourierServices();
       }
     });
@@ -91,6 +91,8 @@ class _CourierServiceButtomSheetState
   @override
   Widget build(BuildContext context) {
     final newDealData = ref.read(newDealDataProvider);
+
+    final appResourceData = ref.watch(appResourceProvider);
 
     final mediaQuery = MediaQuery.of(context).size;
 
@@ -124,7 +126,7 @@ class _CourierServiceButtomSheetState
             ),
             const SizedBox(height: 30),
             Text(
-              "Courier services",
+              "Courier service",
               style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -134,7 +136,7 @@ class _CourierServiceButtomSheetState
             NewDealBottomSheetList(
               showSearchField: true,
               hasSelected: newDealData.shippingRateCourierservice != null,
-              dropdownItems: newDealData.fetchedCourierService,
+              dropdownItems: appResourceData.fetchedCourierServices,
               selectCourierService: _shippingRateCourierservice,
               selectedItem: newDealData.shippingRateCourierservice != null
                   ? newDealData.shippingRateCourierservice.toString()

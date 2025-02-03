@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tever/controller/app_resource_controller.dart';
 import 'package:tever/controller/new_deal_controller.dart';
 import 'package:tever/extensions/deals_tab.dart';
 import 'package:tever/helpers/custom_colors.dart';
@@ -44,7 +45,7 @@ class _NewDealsCategoryBottomSheetState
 
     try {
       await ref
-          .read(newDealDataProvider.notifier)
+          .read(appResourceProvider.notifier)
           .fetchResources(type: DealsDropList.dealCategories.value);
     } on CustomHttpException catch (error) {
       setState(() {
@@ -72,9 +73,9 @@ class _NewDealsCategoryBottomSheetState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final newDealData = ref.watch(newDealDataProvider);
+      final appResourceData = ref.watch(appResourceProvider);
 
-      if (newDealData.dealDetailsCategory.isEmpty) {
+      if (appResourceData.fetchedDealDetailsCategory.isEmpty) {
         _fetchDealCategoryList();
       }
     });
@@ -83,6 +84,8 @@ class _NewDealsCategoryBottomSheetState
   @override
   Widget build(BuildContext context) {
     final newDealData = ref.read(newDealDataProvider);
+
+    final appResourceData = ref.read(appResourceProvider);
 
     final mediaQuery = MediaQuery.of(context).size;
 
@@ -126,7 +129,7 @@ class _NewDealsCategoryBottomSheetState
             NewDealBottomSheetList(
               showSearchField: true,
               hasSelected: newDealData.categoryId != null,
-              dropdownItems: newDealData.dealDetailsCategory,
+              dropdownItems: appResourceData.fetchedDealDetailsCategory,
               selectItem: _selectCategory,
               selectedItem: newDealData.categoryId != null
                   ? newDealData.category.toString()

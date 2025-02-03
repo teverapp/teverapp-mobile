@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tever/controller/app_resource_controller.dart';
 import 'package:tever/controller/new_deal_controller.dart';
 import 'package:tever/extensions/deals_tab.dart';
 import 'package:tever/helpers/custom_colors.dart';
@@ -34,7 +35,7 @@ class _StatesBottomSheetState extends ConsumerState<StatesBottomSheet> {
     }
   }
 
-  Future<void> _fetchStateList() async {
+  Future<void> _fetchStateList({required String? id}) async {
     print("sttaed calllled");
     setState(() {
       _stateListErrorMessage = null;
@@ -42,8 +43,9 @@ class _StatesBottomSheetState extends ConsumerState<StatesBottomSheet> {
     });
 
     try {
-      await ref.read(newDealDataProvider.notifier).fetchResources(
-          type: DealsDropList.state.value, fetchItemWithId: true);
+      await ref
+          .read(appResourceProvider.notifier)
+          .fetchResources(type: DealsDropList.state.value, id: id);
     } on CustomHttpException catch (error) {
       setState(() {
         _stateListErrorMessage = error.toString();
@@ -70,17 +72,21 @@ class _StatesBottomSheetState extends ConsumerState<StatesBottomSheet> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final newDealData = ref.watch(newDealDataProvider);
+      final appResourceData = ref.read(appResourceProvider);
 
-      if (newDealData.fetchedStates.isEmpty) {
-        _fetchStateList();
+      final newDealsData = ref.read(newDealDataProvider);
+
+      if (appResourceData.fetchedStates.isEmpty) {
+        _fetchStateList(id: newDealsData.shippingToCountryId);
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final newDealData = ref.read(newDealDataProvider);
+    final appResourceData = ref.read(appResourceProvider);
+
+    final newDealsData = ref.read(newDealDataProvider);
 
     final mediaQuery = MediaQuery.of(context).size;
 
@@ -126,12 +132,13 @@ class _StatesBottomSheetState extends ConsumerState<StatesBottomSheet> {
               hideBulletPoint: true,
               key: const Key("state"),
               hasSelected: false,
-              dropdownItems: newDealData.fetchedStates,
+              dropdownItems: appResourceData.fetchedStates,
               selectItem: _addToSelectedStates,
               selectedItem: "State",
               errorMessage: _stateListErrorMessage,
               isLoading: _stateListIsLoading,
-              retry: _fetchStateList,
+              retry: () =>
+                  _fetchStateList(id: newDealsData.shippingToCountryId),
             )
           ],
         ),

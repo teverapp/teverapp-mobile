@@ -102,6 +102,30 @@ class NewEventContinueButton extends ConsumerWidget {
     return true;
   }
 
+  bool _validatePhysicalEvent({
+    required NewEvent newEventData,
+    required BuildContext context,
+  }) {
+    final virtualValidations = [
+      {
+        "condition": newEventData.addressOfEvent == null,
+        "message": "Please enter address of event!"
+      },
+    ];
+
+    for (var validation in virtualValidations) {
+      if (validation["condition"] as bool) {
+        _showToast(
+          message: validation["message"].toString(),
+          status: ToastStatus.error.name,
+          context: context,
+        );
+        return false;
+      }
+    }
+    return true;
+  }
+
   void _continue({
     required String? type,
     required BuildContext context,
@@ -120,6 +144,13 @@ class NewEventContinueButton extends ConsumerWidget {
 
     if (!_validateSharedFields(newEventData: newEventData, context: context)) {
       return;
+    }
+
+    if (type == newEventType[0].name) {
+      if (!_validatePhysicalEvent(
+          newEventData: newEventData, context: context)) {
+        return;
+      }
     }
 
     if (type == newEventType[1].name) {

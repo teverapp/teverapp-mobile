@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:tever/model/common.dart';
+import 'package:tever/model/coordinate.dart';
 import 'package:tever/model/ticket_tier.dart';
 
 class NewEvent {
@@ -9,7 +10,7 @@ class NewEvent {
   String description;
   CommonType? eventType;
   CommonType? hostingPlatform;
-  String addressOfEvent;
+  Coordinate? addressOfEvent;
   String eventLink;
   String? timeZone;
   String startTimeAndDate;
@@ -41,7 +42,7 @@ class NewEvent {
         description: "",
         eventType: null,
         hostingPlatform: null,
-        addressOfEvent: "",
+        addressOfEvent: null,
         eventLink: "",
         timeZone: null,
         startTimeAndDate: "",
@@ -73,7 +74,7 @@ class NewEvent {
     String? description,
     CommonType? eventType,
     CommonType? hostingPlatform,
-    String? addressOfEvent,
+    Coordinate? addressOfEvent,
     String? eventLink,
     String? timeZone,
     String? startTimeAndDate,

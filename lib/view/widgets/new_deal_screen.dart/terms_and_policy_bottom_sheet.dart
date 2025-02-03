@@ -99,7 +99,7 @@ class _TermsAndPolicyBottomSheetState
 
     final mediaQuery = MediaQuery.of(context).size;
 
-    final height = mediaQuery.height * 0.6;
+    final height = mediaQuery.height * 0.66;
 
     return SafeArea(
       child: Container(

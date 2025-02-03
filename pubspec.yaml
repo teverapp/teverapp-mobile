@@ -265,6 +265,7 @@ flutter:
     - assets/icon/check_mark_green.png
     - assets/icon/emoji_smile.png
     - assets/icon/gift.png
+    - assets/icon/gift_referrals.png
     - assets/icon/copy.png
     - assets/icon/copy_grey.png
     - assets/icon/facebook.png
@@ -303,6 +304,11 @@ flutter:
     - assets/icon/close_slim.png
     - assets/icon/info_circle_thin.png
     - assets/icon/tick_circle.png
+    - assets/icon/refresh.png
+    - assets/icon/chart.png
+    - assets/icon/information.png
+    - assets/icon/message_question.png
+    - assets/icon/task.png
     
     
 

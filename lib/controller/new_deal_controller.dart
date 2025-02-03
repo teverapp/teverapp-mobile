@@ -5,6 +5,7 @@ import "package:flutter/material.dart";
 import "package:http/http.dart" as http;
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:tever/controller/access_token_controller.dart";
+import "package:tever/controller/app_resource_controller.dart";
 import "package:tever/extensions/deals_tab.dart";
 import "package:tever/extensions/new_deal_update.dart";
 import "package:tever/helpers/general.dart";
@@ -45,12 +46,6 @@ class NewDealControllerNotifier extends StateNotifier<NewDeal> {
     final updatedCountries = [...state.selectedCountries!, country];
 
     state = state.copyWith(selectedCountries: updatedCountries);
-  }
-
-  void addToSubCategoryList({required CommonType subCat}) {
-    final updatedSubCatgory = [...state.dealDetailsSubCategory, subCat];
-
-    state = state.copyWith(dealDetailsSubCategory: updatedSubCatgory);
   }
 
   void updateColors({required CommonType color}) {
@@ -100,29 +95,32 @@ class NewDealControllerNotifier extends StateNotifier<NewDeal> {
   }
 
   void resetSelectedStatedAndCountry() {
+    ref.read(appResourceProvider.notifier).resetFetchedStates();
+
+    ref.read(appResourceProvider.notifier).resetFetchedCountries();
+
     print("reset callled");
     state = state.copyWith(
         selectedCountries: [],
         selectedStates: [],
-        countries: [],
-        fetchedStates: [],
         shippingToCountry: null,
         shippingToContinent: null);
   }
 
   void resetSelectedStateDetails() {
-    print("reset callled");
+    ref.read(appResourceProvider.notifier).resetFetchedStates();
+
     state = state.copyWith(
         selectedCountries: [],
         selectedStates: [],
-        fetchedStates: [],
         shippingToCountry: null,
         shippingToContinent: null);
   }
 
   void resetSpaceLocationSelectedState() {
-    print("reset callled");
-    state = state.copyWith(spaceLocationState: null, fetchedStates: []);
+    ref.read(appResourceProvider.notifier).resetFetchedStates();
+
+    state = state.copyWith(spaceLocationState: null);
   }
 
   void removeFromSelectedState({required int index}) {
@@ -227,139 +225,139 @@ class NewDealControllerNotifier extends StateNotifier<NewDeal> {
         state.copyWith(selectedTermsAndPolicy: updatedSelectedTermsAndPolicy);
   }
 
-  Future<void> fetchResources(
-      {required String type, bool fetchItemWithId = false}) async {
-    print("fetchNewDealDetailsCategory called");
+  // Future<void> fetchResources(
+  //     {required String type, bool fetchItemWithId = false}) async {
+  //   print("fetchNewDealDetailsCategory called");
 
-    final queryParam = type;
+  //   final queryParam = type;
 
-    // final queryParam = type == DealsDropList.dealCategories.value
-    //     ? DealsDropList.dealCategories.value
-    //     : type == DealsDropList.dealSubcategories.value
-    //         ? DealsDropList.dealSubcategories.value
-    //         : type == DealsDropList.country.value
-    //             ? DealsDropList.country.value
-    //             : (type == DealsDropList.state.value ||
-    //                     type == DealsDropList.spaceLocationState.value)
-    //                 ? DealsDropList.state.value
-    //                 : type == DealsDropList.promotionTypes.value
-    //             ? DealsDropList.country.value
-    //             :"";
+  //   // final queryParam = type == DealsDropList.dealCategories.value
+  //   //     ? DealsDropList.dealCategories.value
+  //   //     : type == DealsDropList.dealSubcategories.value
+  //   //         ? DealsDropList.dealSubcategories.value
+  //   //         : type == DealsDropList.country.value
+  //   //             ? DealsDropList.country.value
+  //   //             : (type == DealsDropList.state.value ||
+  //   //                     type == DealsDropList.spaceLocationState.value)
+  //   //                 ? DealsDropList.state.value
+  //   //                 : type == DealsDropList.promotionTypes.value
+  //   //             ? DealsDropList.country.value
+  //   //             :"";
 
-    final resourceId = type == DealsDropList.country.value
-        ? state.shippingToContinentId
-        : type == DealsDropList.state.value
-            ? state.shippingToCountryId
-            : type == DealsDropList.spaceLocationState.value
-                ? state.selectedCountryFromAllCountryId
-                : type == DealsDropList.dealSubcategories.value
-                    ? state.categoryId
-                    : "";
+  //   final resourceId = type == DealsDropList.country.value
+  //       ? state.shippingToContinentId
+  //       : type == DealsDropList.state.value
+  //           ? state.shippingToCountryId
+  //           : type == DealsDropList.spaceLocationState.value
+  //               ? state.selectedCountryFromAllCountryId
+  //               : type == DealsDropList.dealSubcategories.value
+  //                   ? state.categoryId
+  //                   : "";
 
-    final url =
-        Uri.parse("$baseUrl/util/resource/get").replace(queryParameters: {
-      "Page": "1",
-      "Limit": "2",
-      "Download": "true",
-      if (fetchItemWithId) "ResourceId": resourceId,
-      "Resource": queryParam,
-    });
+  //   final url =
+  //       Uri.parse("$baseUrl/util/resource/get").replace(queryParameters: {
+  //     "Page": "1",
+  //     "Limit": "2",
+  //     "Download": "true",
+  //     if (fetchItemWithId) "ResourceId": resourceId,
+  //     "Resource": queryParam,
+  //   });
 
-    try {
-      final response = await http.get(
-        url,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      );
+  //   try {
+  //     final response = await http.get(
+  //       url,
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     );
 
-      final responseData = jsonDecode(response.body);
-      print(
-          "Response Data: Resource: $queryParam ResourceId: $resourceId body => $responseData");
-      if (response.statusCode == 200) {
-        final List<dynamic> categoriesData = responseData['data'] ?? [];
+  //     final responseData = jsonDecode(response.body);
+  //     print(
+  //         "Response Data: Resource: $queryParam ResourceId: $resourceId body => $responseData");
+  //     if (response.statusCode == 200) {
+  //       final List<dynamic> categoriesData = responseData['data'] ?? [];
 
-        final List<CommonType> fetchedResources =
-            categoriesData.map((item) => CommonType.fromJson(item)).toList();
+  //       final List<CommonType> fetchedResources =
+  //           categoriesData.map((item) => CommonType.fromJson(item)).toList();
 
-        state = state.copyWith(
-          fetchedCourierService: type == DealsDropList.couriers.value
-              ? fetchedResources
-              : state.dealDetailsCategory,
-          fetchedPromotionType: type == DealsDropList.promotionTypes.value
-              ? fetchedResources
-              : state.dealDetailsCategory,
-          fetchedStates: (type == DealsDropList.state.value ||
-                  type == DealsDropList.spaceLocationState.value)
-              ? fetchedResources
-              : state.fetchedStates,
-          countries: type == DealsDropList.country.value
-              ? fetchedResources
-              : state.countries,
-          dealDetailsSubCategory: type == DealsDropList.dealSubcategories.value
-              ? fetchedResources
-              : state.dealDetailsSubCategory,
-          dealDetailsCategory: type == DealsDropList.dealCategories.value
-              ? fetchedResources
-              : state.dealDetailsCategory,
-        );
+  //       state = state.copyWith(
+  //         fetchedCourierService: type == DealsDropList.couriers.value
+  //             ? fetchedResources
+  //             : state.dealDetailsCategory,
+  //         fetchedPromotionType: type == DealsDropList.promotionTypes.value
+  //             ? fetchedResources
+  //             : state.dealDetailsCategory,
+  //         fetchedStates: (type == DealsDropList.state.value ||
+  //                 type == DealsDropList.spaceLocationState.value)
+  //             ? fetchedResources
+  //             : state.fetchedStates,
+  //         countries: type == DealsDropList.country.value
+  //             ? fetchedResources
+  //             : state.countries,
+  //         dealDetailsSubCategory: type == DealsDropList.dealSubcategories.value
+  //             ? fetchedResources
+  //             : state.dealDetailsSubCategory,
+  //         dealDetailsCategory: type == DealsDropList.dealCategories.value
+  //             ? fetchedResources
+  //             : state.dealDetailsCategory,
+  //       );
 
-        print("Updated State: ${state.dealDetailsCategory}");
+  //       print("Updated State: ${state.dealDetailsCategory}");
 
-        return;
-      }
+  //       return;
+  //     }
 
-      final errorMessage =
-          responseData['error']?['message'] ?? "Unknown error occurred";
-      throw CustomHttpException(errorMessage);
-    } catch (error) {
-      print("Error fetching deal categories: ${error.toString()}");
-      rethrow;
-    }
-  }
+  //     final errorMessage =
+  //         responseData['error']?['message'] ?? "Unknown error occurred";
+  //     throw CustomHttpException(errorMessage);
+  //   } catch (error) {
+  //     print("Error fetching deal categories: ${error.toString()}");
+  //     rethrow;
+  //   }
+  // }
 
-  Future<void> fetchNewDealPromotionType() async {
-    final url =
-        Uri.parse("$baseUrl/util/resource/get").replace(queryParameters: {
-      "Page": "1",
-      "Limit": "22",
-      "Resource": "promotion-types",
-    });
+  // Future<void> fetchNewDealPromotionType() async {
+  //   final url =
+  //       Uri.parse("$baseUrl/util/resource/get").replace(queryParameters: {
+  //     "Page": "1",
+  //     "Limit": "22",
+  //     "Resource": "promotion-types",
+  //   });
 
-    try {
-      final response = await http.get(
-        url,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      );
+  //   try {
+  //     final response = await http.get(
+  //       url,
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     );
 
-      final responseData = jsonDecode(response.body);
-      print("Response Data: $responseData");
+  //     final responseData = jsonDecode(response.body);
+  //     print("Response Data: $responseData");
 
-      if (response.statusCode == 200) {
-        final List<dynamic> categoriesData = responseData['data'] ?? [];
+  //     if (response.statusCode == 200) {
+  //       final List<dynamic> categoriesData = responseData['data'] ?? [];
 
-        final List<CommonType> fetchedPromotionTypes =
-            categoriesData.map((item) => CommonType.fromJson(item)).toList();
+  //       final List<CommonType> fetchedPromotionTypes =
+  //           categoriesData.map((item) => CommonType.fromJson(item)).toList();
 
-        state = state.copyWith(
-          fetchedPromotionType: fetchedPromotionTypes,
-        );
+  //       state = state.copyWith(
+  //         fetchedPromotionType: fetchedPromotionTypes,
+  //       );
 
-        print("Updated State: ${state.dealDetailsCategory}");
-        return;
-      }
+  //       print("Updated State: ${state.dealDetailsCategory}");
+  //       return;
+  //     }
 
-      // Handle error case
-      final errorMessage =
-          responseData['error']?['message'] ?? "Unknown error occurred";
-      throw CustomHttpException(errorMessage);
-    } catch (error) {
-      print("Error fetching deal promotion types: ${error.toString()}");
-      rethrow;
-    }
-  }
+  //     // Handle error case
+  //     final errorMessage =
+  //         responseData['error']?['message'] ?? "Unknown error occurred";
+  //     throw CustomHttpException(errorMessage);
+  //   } catch (error) {
+  //     print("Error fetching deal promotion types: ${error.toString()}");
+  //     rethrow;
+  //   }
+  // }
 
   // void updateField(String key, dynamic value) {
   //   state = state.update(key, value);
@@ -380,10 +378,10 @@ class NewDealControllerNotifier extends StateNotifier<NewDeal> {
   //   request.fields['SubCategoryId'] = state.subCategoryId ?? state.subCategory.toString();
   //   request.fields['Description'] = state.description.toString();
   //   request.fields['IsDraft'] = saveToDraft ? "true" : "false";;
-  //   request.fields['DealLong'] = dealLong.toString();
-  //   request.fields['DealLat'] = dealLat.toString();
+  //   request.fields['DealLong'] = state.contactInfoAddress!.locationLongitude.toString();
+  //   request.fields['DealLat'] = state.contactInfoAddress!.locationLatiude.toString();
   //   request.fields['ShippingId'] = state.shippingFromCountryId.toString();
-  //   request.fields['UserId'] = userId;
+  // //  request.fields['UserId'] = userId;
   //   request.fields['IsFeatured'] = isFeatured.toString();
   //   request.fields['IsPremium'] = isPremium.toString();
   //   request.fields['IsTeverPick'] = isTeverPick.toString();

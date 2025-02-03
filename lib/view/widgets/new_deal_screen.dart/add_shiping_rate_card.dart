@@ -108,12 +108,12 @@ class _AddShipingRateCardState extends ConsumerState<AddShipingRateCard> {
     final newDealData = ref.watch(newDealDataProvider);
 
     _rateController.text =
-        newDealData.shippingRate != null || newDealData.shippingRate != ""
+        newDealData.shippingRate != null && newDealData.shippingRate != ""
             ? newDealData.shippingRate.toString()
             : "";
 
     _estimatedDeliveryTimeController.text =
-        newDealData.shippingRateEstimatedDeliveryTime != null ||
+        newDealData.shippingRateEstimatedDeliveryTime != null &&
                 newDealData.shippingRateEstimatedDeliveryTime != ""
             ? newDealData.shippingRateEstimatedDeliveryTime.toString()
             : "";

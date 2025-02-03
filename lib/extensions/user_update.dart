@@ -11,10 +11,6 @@ extension UserUpdate on User {
         return copyWith(phoneNumber: value);
       case "currentAddress":
         return copyWith(currentAddress: value);
-      case "latitude":
-        return copyWith(latitude: value);
-      case "longitude":
-        return copyWith(longitude: value);
       case "firstName":
         return copyWith(firstName: value);
       case "lastName":

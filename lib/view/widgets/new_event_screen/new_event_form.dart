@@ -3,9 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tever/controller/new_event_controlller.dart';
 import 'package:tever/helpers/custom_colors.dart';
+import 'package:tever/model/coordinate.dart';
 import 'package:tever/model/new_event.dart';
 import 'package:tever/view/widgets/general/common/custom_input_selection_button.dart';
-import 'package:tever/view/widgets/new_event_screen/event_location_bottom_sheet.dart';
+import 'package:tever/view/widgets/new_event_screen/address_list_bottom_sheet.dart';
 import 'package:tever/view/widgets/new_event_screen/new_event_continue_button.dart';
 import 'package:tever/view/widgets/new_event_screen/select_event_category_bottom_sheet.dart';
 import 'package:tever/view/widgets/new_event_screen/select_event_type_bottom_sheet.dart';
@@ -30,9 +31,6 @@ class _NewEventFormState extends ConsumerState<NewEventForm> {
 
   final TextEditingController _descriptionController = TextEditingController();
 
-  final TextEditingController _addressOfEventController =
-      TextEditingController();
-
   final TextEditingController _eventLinkController = TextEditingController();
 
   final TextEditingController _startTimeAndDateController =
@@ -56,7 +54,13 @@ class _NewEventFormState extends ConsumerState<NewEventForm> {
     );
   }
 
-  void _selectEventLocationBottomSheet() {
+  void _selectEventLocation({required Coordinate location}) {
+    ref
+        .read(newEventDataProvider.notifier)
+        .updateNewEvent("addressOfEvent", location);
+  }
+
+  void _selectEventLocationBottomSheet({String? inputText}) {
     showModalBottomSheet(
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -66,7 +70,11 @@ class _NewEventFormState extends ConsumerState<NewEventForm> {
       ),
       context: context,
       builder: (_) {
-        return const EventLocationBottomSheet();
+        return AddressListButtomSheet(
+          title: "Event Location",
+          intialSearchInput: inputText,
+          selectLocation: _selectEventLocation,
+        );
       },
     );
   }
@@ -127,8 +135,6 @@ class _NewEventFormState extends ConsumerState<NewEventForm> {
 
       _descriptionController.text = newEventData.description;
 
-      _addressOfEventController.text = newEventData.addressOfEvent;
-
       _eventLinkController.text = newEventData.eventLink;
 
       _startTimeAndDateController.text = newEventData.startTimeAndDate;
@@ -144,8 +150,6 @@ class _NewEventFormState extends ConsumerState<NewEventForm> {
 
     _descriptionController.dispose();
 
-    _addressOfEventController.dispose();
-
     _eventLinkController.dispose();
 
     _startTimeAndDateController.dispose();
@@ -156,8 +160,6 @@ class _NewEventFormState extends ConsumerState<NewEventForm> {
   @override
   Widget build(BuildContext context) {
     final newEventData = ref.watch(newEventDataProvider);
-
-    _addressOfEventController.text = newEventData.addressOfEvent;
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
@@ -308,61 +310,16 @@ class _NewEventFormState extends ConsumerState<NewEventForm> {
             ],
           if (newEventData.eventType != null)
             if (newEventData.eventType!.name == newEventType[0].name) ...[
-              TextFormField(
-                controller: _addressOfEventController,
-                style: TextStyle(
-                  color: _customColor.custom242424,
-                  fontSize: 14,
+              CustomInputSelectionButton(
+                hideTrailingIcon: true,
+                imageUrl: "assets/icon/location_gray.png",
+                selectedItem: newEventData.addressOfEvent != null
+                    ? newEventData.addressOfEvent!.locationName.toString()
+                    : "Enter address of the event",
+                hasSelected: newEventData.addressOfEvent != null,
+                onTap: () => _selectEventLocationBottomSheet(
+                  inputText: newEventData.addressOfEvent?.locationName,
                 ),
-                readOnly: true,
-                onTap: _selectEventLocationBottomSheet,
-                decoration: InputDecoration(
-                  hintText: "Enter address of the event",
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.all(16),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: _customColor.customEFEFEF,
-                      width: 1,
-                    ),
-                  ),
-                  prefixIconConstraints:
-                      const BoxConstraints(maxHeight: 150, maxWidth: 150),
-                  prefixIcon: Container(
-                    margin: const EdgeInsets.only(left: 16, right: 8),
-                    child: Image.asset(
-                      "assets/icon/location_gray.png",
-                      height: 16,
-                      width: 16,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: _customColor.customEFEFEF,
-                      width: 1,
-                    ),
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: _customColor.customEFEFEF,
-                      width: 1,
-                    ),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(width: 1),
-                  ),
-                  hintStyle: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: _customColor.custom888888,
-                  ),
-                ),
-                onChanged: (value) async {},
               ),
               const SizedBox(height: 16),
             ],

@@ -19,7 +19,7 @@ class CurrentLocation extends ConsumerWidget {
           const SizedBox(width: 100),
           Expanded(
             child: Text(
-              userData.currentAddress.toString(),
+              userData.currentAddress!.locationName.toString(),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.right,

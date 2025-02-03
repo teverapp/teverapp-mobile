@@ -1,13 +1,14 @@
 import 'dart:io';
 
 import 'package:tever/model/common.dart';
+import 'package:tever/model/coordinate.dart';
 
 class NewDeal {
   CommonType? type;
-  List<CommonType> dealDetailsCategory;
-  List<CommonType> dealDetailsSubCategory;
-  List<CommonType> countries;
-  List<CommonType> fetchedStates;
+  // List<CommonType> dealDetailsCategory;
+  // List<CommonType> dealDetailsSubCategory;
+  // List<CommonType> countries;
+  // List<CommonType> fetchedStates;
   List<CommonType> colors;
   List<CommonType> materials;
   List<CommonType> sizes;
@@ -66,17 +67,17 @@ class NewDeal {
   String? contactInfoAboutBrand;
   String? contactInfoEmail;
   bool? contactInfoEmailError;
-  String? contactInfoAddress;
-  List<CommonType> fetchedPromotionType;
-  List<CommonType> fetchedCourierService;
+  Coordinate? contactInfoAddress;
+  // List<CommonType> fetchedPromotionType;
+  // List<CommonType> fetchedCourierService;
 
   NewDeal({
     required this.type,
     required this.colors,
     required this.sizes,
     required this.materials,
-    required this.dealDetailsCategory,
-    required this.dealDetailsSubCategory,
+    // required this.dealDetailsCategory,
+    // required this.dealDetailsSubCategory,
     required this.categoryId,
     required this.subCategoryId,
     required this.category,
@@ -95,8 +96,8 @@ class NewDeal {
     required this.dealPromotionAffliateMarketingEarningValue,
     required this.requiredCustomerToInputCodeDuringCheckOut,
     required this.dealPromotionMaterialImage,
-    required this.countries,
-    required this.fetchedStates,
+    // required this.countries,
+    // required this.fetchedStates,
     required this.shippingFromCountry,
     required this.shippingToRegion,
     required this.shippingToCountry,
@@ -132,17 +133,17 @@ class NewDeal {
     required this.contactInfoEmail,
     required this.contactInfoEmailError,
     required this.contactInfoAddress,
-    required this.fetchedPromotionType,
+    // required this.fetchedPromotionType,
     required this.earningValues,
     required this.selectedTermsAndPolicy,
-    required this.fetchedCourierService,
+    // required this.fetchedCourierService,
   });
 
   factory NewDeal.defaultState() {
     return NewDeal(
       type: dealTypeDropdownItems[0],
-      dealDetailsCategory: [],
-      dealDetailsSubCategory: [],
+      // dealDetailsCategory: [],
+      // dealDetailsSubCategory: [],
       categoryId: null,
       subCategoryId: null,
       category: null,
@@ -161,8 +162,8 @@ class NewDeal {
       dealPromotionAffliateMarketingEarningValue: null,
       requiredCustomerToInputCodeDuringCheckOut: false,
       dealPromotionMaterialImage: null,
-      countries: [],
-      fetchedStates: [],
+      // countries: [],
+      // fetchedStates: [],
       shippingFromCountry: null,
       shippingToRegion: null,
       shippingToCountry: null,
@@ -197,10 +198,10 @@ class NewDeal {
       contactInfoAboutBrand: "",
       contactInfoEmail: "",
       contactInfoEmailError: true,
-      contactInfoAddress: "",
-      fetchedPromotionType: [],
+      contactInfoAddress: null,
+      // fetchedPromotionType: [],
       selectedTermsAndPolicy: [],
-      fetchedCourierService: [],
+      //fetchedCourierService: [],
       colors: [
         CommonType(id: "1", name: "Red"),
         CommonType(id: "2", name: "Blue"),
@@ -251,11 +252,11 @@ class NewDeal {
 
   NewDeal copyWith({
     CommonType? type,
-    List<CommonType>? dealDetailsCategory,
-    List<CommonType>? dealDetailsSubCategory,
-    List<CommonType>? countries,
+    // List<CommonType>? dealDetailsCategory,
+    // List<CommonType>? dealDetailsSubCategory,
+    // List<CommonType>? countries,
     List<CommonType>? allCountries,
-    List<CommonType>? fetchedStates,
+    //List<CommonType>? fetchedStates,
     String? categoryId,
     String? subCategoryId,
     String? category,
@@ -308,24 +309,24 @@ class NewDeal {
     String? contactInfoAboutBrand,
     String? contactInfoEmail,
     bool? contactInfoEmailError,
-    String? contactInfoAddress,
-    List<CommonType>? fetchedPromotionType,
+    Coordinate? contactInfoAddress,
+    // List<CommonType>? fetchedPromotionType,
     List<CommonType>? colors,
     List<CommonType>? materials,
     List<CommonType>? sizes,
     List<CommonType>? earningValues,
     List<DocumentFile>? selectedTermsAndPolicy,
-    List<CommonType>? fetchedCourierService,
+    // List<CommonType>? fetchedCourierService,
   }) {
     print(
         "copyWith called. New value: $category, Current value: ${subCategory}");
     return NewDeal(
       type: type ?? this.type,
-      dealDetailsCategory: dealDetailsCategory ?? this.dealDetailsCategory,
-      countries: countries ?? this.countries,
-      fetchedStates: fetchedStates ?? this.fetchedStates,
-      dealDetailsSubCategory:
-          dealDetailsSubCategory ?? this.dealDetailsSubCategory,
+      // dealDetailsCategory: dealDetailsCategory ?? this.dealDetailsCategory,
+      // countries: countries ?? this.countries,
+      // fetchedStates: fetchedStates ?? this.fetchedStates,
+      // dealDetailsSubCategory:
+      //     dealDetailsSubCategory ?? this.dealDetailsSubCategory,
       categoryId: categoryId ?? this.categoryId,
       subCategoryId: subCategoryId ?? this.subCategoryId,
       category: category ?? this.category,
@@ -398,15 +399,16 @@ class NewDeal {
       contactInfoEmailError:
           contactInfoEmailError ?? this.contactInfoEmailError,
       contactInfoAddress: contactInfoAddress ?? this.contactInfoAddress,
-      fetchedPromotionType: fetchedPromotionType ?? this.fetchedPromotionType,
+
+      ///  fetchedPromotionType: fetchedPromotionType ?? this.fetchedPromotionType,
       colors: colors ?? this.colors,
       materials: materials ?? this.materials,
       sizes: sizes ?? this.sizes,
       earningValues: earningValues ?? this.earningValues,
       selectedTermsAndPolicy:
           selectedTermsAndPolicy ?? this.selectedTermsAndPolicy,
-      fetchedCourierService:
-          fetchedCourierService ?? this.fetchedCourierService,
+      //  fetchedCourierService:
+      //  fetchedCourierService ?? this.fetchedCourierService,
     );
   }
 }

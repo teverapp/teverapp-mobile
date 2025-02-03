@@ -30,7 +30,7 @@ class Services extends StatelessWidget {
                 color: theme.colorScheme.primary),
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 20),
         Container(
           padding: const EdgeInsets.all(16),
           color: Colors.white,
@@ -41,11 +41,24 @@ class Services extends StatelessWidget {
                 title: "Hot deals",
               ),
               SizedBox(height: 8),
-              ProfileButton(icon: "calendar_gray.png", title: "Events"),
+              ProfileButton(
+                icon: "calendar_gray.png",
+                title: "Events",
+              ),
               SizedBox(height: 8),
               ProfileButton(
                 icon: "location_darker.png",
-                title: "Spaces & attractions",
+                title: "Spaces",
+              ),
+              SizedBox(height: 8),
+              ProfileButton(
+                icon: "refresh.png",
+                title: "Barter",
+              ),
+              SizedBox(height: 8),
+              ProfileButton(
+                icon: "chart.png",
+                title: "Analytics",
               ),
             ],
           ),

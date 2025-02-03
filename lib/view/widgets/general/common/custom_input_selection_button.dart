@@ -7,14 +7,17 @@ class CustomInputSelectionButton extends StatefulWidget {
   final double? bottomSheetHeight;
   final VoidCallback onTap;
   final String? imageUrl;
+  final bool hideTrailingIcon;
 
-  const CustomInputSelectionButton(
-      {super.key,
-      required this.selectedItem,
-      required this.hasSelected,
-      this.bottomSheetHeight = 96,
-      required this.onTap,
-      this.imageUrl});
+  const CustomInputSelectionButton({
+    super.key,
+    required this.selectedItem,
+    required this.hasSelected,
+    this.bottomSheetHeight = 96,
+    required this.onTap,
+    this.imageUrl,
+    this.hideTrailingIcon = false,
+  });
 
   @override
   State<CustomInputSelectionButton> createState() =>
@@ -56,20 +59,25 @@ class _CustomInputSelectionButtonState
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                  Text(
-                    widget.selectedItem,
-                    style: TextStyle(
-                      color: !widget.hasSelected
-                          ? _customColor.custom888888
-                          : _customColor.custom242424,
-                      fontSize: 14,
+                  Expanded(
+                    child: Text(
+                      widget.selectedItem,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: !widget.hasSelected
+                            ? _customColor.custom888888
+                            : _customColor.custom242424,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
-                  Image.asset(
-                    "assets/icon/drop_down.png",
-                    height: 16,
-                    width: 16,
-                  )
+                  if (!widget.hideTrailingIcon)
+                    Image.asset(
+                      "assets/icon/drop_down.png",
+                      height: 16,
+                      width: 16,
+                    )
                 ]))
           ],
         ),
