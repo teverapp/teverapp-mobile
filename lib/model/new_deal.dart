@@ -5,10 +5,6 @@ import 'package:tever/model/coordinate.dart';
 
 class NewDeal {
   CommonType? type;
-  // List<CommonType> dealDetailsCategory;
-  // List<CommonType> dealDetailsSubCategory;
-  // List<CommonType> countries;
-  // List<CommonType> fetchedStates;
   List<CommonType> colors;
   List<CommonType> materials;
   List<CommonType> sizes;
@@ -40,12 +36,8 @@ class NewDeal {
   String? shippingToContinentId;
   String? shippingToCountry;
   String? shippingToCountryId;
-  // String? shippingToState;
-  // String? shippingToCity;
   bool showShippingRateCard;
   CommonType? shippingRateCourierservice;
-  // String? shippingRate;
-  // String? shippingRateEstimatedDeliveryTime;
   List<LocationSelection>? selectedCountries;
   List<LocationSelection>? selectedStates;
   bool showAddPromotionMaterialCard;
@@ -59,18 +51,7 @@ class NewDeal {
   String? spaceLocationState;
   String? capacity;
   String? dimension;
-  // String? contactInfoCountryFlag;
-  // String? contactInfoCountryPhoneCode;
-  // String? contactInfoCountryAcronym;
-  // String? contactInfoPhoneNumber;
-  // String? contactInfoBrandName;
-  // String? contactInfoAboutBrand;
-  // String? contactInfoEmail;
-  // bool? contactInfoEmailError;
   bool hasCreatedABussinessProfile;
-  // Coordinate? contactInfoAddress;
-  // List<CommonType> fetchedPromotionType;
-  // List<CommonType> fetchedCourierService;
 
   NewDeal({
     required this.hasCreatedABussinessProfile,
@@ -78,8 +59,6 @@ class NewDeal {
     required this.colors,
     required this.sizes,
     required this.materials,
-    // required this.dealDetailsCategory,
-    // required this.dealDetailsSubCategory,
     required this.categoryId,
     required this.subCategoryId,
     required this.category,
@@ -99,20 +78,14 @@ class NewDeal {
     required this.dealPromotionAffliateMarketingEarningValue,
     required this.requiredCustomerToInputCodeDuringCheckOut,
     required this.dealPromotionMaterialImage,
-    // required this.countries,
-    // required this.fetchedStates,
     required this.shippingFromCountry,
     required this.shippingToRegion,
     required this.shippingToCountry,
     required this.shippingToCountryId,
-    // required this.shippingToState,
-    // required this.shippingToCity,
     required this.shippingToContinent,
     required this.shippingToContinentId,
     required this.showShippingRateCard,
     required this.shippingRateCourierservice,
-    // required this.shippingRate,
-    // required this.shippingRateEstimatedDeliveryTime,
     required this.selectedCountries,
     required this.selectedStates,
     required this.showAddPromotionMaterialCard,
@@ -126,18 +99,14 @@ class NewDeal {
     required this.spaceLocationState,
     required this.capacity,
     required this.dimension,
-    // required this.fetchedPromotionType,
     required this.earningValues,
     required this.selectedTermsAndPolicy,
-    // required this.fetchedCourierService,
   });
 
   factory NewDeal.defaultState() {
     return NewDeal(
       type: dealTypeDropdownItems[0],
       hasCreatedABussinessProfile: false,
-      // dealDetailsCategory: [],
-      // dealDetailsSubCategory: [],
       categoryId: null,
       subCategoryId: null,
       category: null,
@@ -157,14 +126,10 @@ class NewDeal {
       dealPromotionAffliateMarketingEarningValue: null,
       requiredCustomerToInputCodeDuringCheckOut: false,
       dealPromotionMaterialImage: null,
-      // countries: [],
-      // fetchedStates: [],
       shippingFromCountry: null,
       shippingToRegion: null,
       shippingToCountry: null,
       shippingToCountryId: null,
-      // shippingToState: null,
-      // shippingToCity: null,
       shippingToContinent: null,
       shippingToContinentId: null,
       showShippingRateCard: false,
@@ -174,8 +139,6 @@ class NewDeal {
         courierShippingRate: null,
         courierEstimatedTime: null,
       ),
-      // shippingRate: null,
-      // shippingRateEstimatedDeliveryTime: null,
       selectedCountries: [],
       selectedStates: [],
       showAddPromotionMaterialCard: false,
@@ -190,7 +153,6 @@ class NewDeal {
       capacity: "",
       dimension: "",
       selectedTermsAndPolicy: [],
-      //fetchedCourierService: [],
       colors: [
         CommonType(id: "1", name: "Red"),
         CommonType(id: "2", name: "Blue"),
@@ -241,11 +203,7 @@ class NewDeal {
 
   NewDeal copyWith({
     CommonType? type,
-    // List<CommonType>? dealDetailsCategory,
-    // List<CommonType>? dealDetailsSubCategory,
-    // List<CommonType>? countries,
     List<CommonType>? allCountries,
-    //List<CommonType>? fetchedStates,
     String? categoryId,
     String? subCategoryId,
     String? category,
@@ -269,14 +227,10 @@ class NewDeal {
     String? shippingToRegion,
     String? shippingToCountry,
     String? shippingToCountryId,
-    // String? shippingToState,
-    // String? shippingToCity,
     String? shippingToContinent,
     String? shippingToContinentId,
     bool? showShippingRateCard,
     CommonType? shippingRateCourierservice,
-    // String? shippingRate,
-    // String? shippingRateEstimatedDeliveryTime,
     List<LocationSelection>? selectedCountries,
     List<LocationSelection>? selectedStates,
     bool? showAddPromotionMaterialCard,
@@ -300,24 +254,15 @@ class NewDeal {
     String? contactInfoEmail,
     bool? contactInfoEmailError,
     Coordinate? contactInfoAddress,
-    // List<CommonType>? fetchedPromotionType,
     List<CommonType>? colors,
     List<CommonType>? materials,
     List<CommonType>? sizes,
     List<CommonType>? earningValues,
     List<DocumentFile>? selectedTermsAndPolicy,
     bool? hasCreatedABussinessProfile,
-    // List<CommonType>? fetchedCourierService,
   }) {
-    print(
-        "copyWith called. New value: $category, Current value: ${subCategory}");
     return NewDeal(
       type: type ?? this.type,
-      // dealDetailsCategory: dealDetailsCategory ?? this.dealDetailsCategory,
-      // countries: countries ?? this.countries,
-      // fetchedStates: fetchedStates ?? this.fetchedStates,
-      // dealDetailsSubCategory:
-      //     dealDetailsSubCategory ?? this.dealDetailsSubCategory,
       categoryId: categoryId ?? this.categoryId,
       subCategoryId: subCategoryId ?? this.subCategoryId,
       category: category ?? this.category,
@@ -350,14 +295,9 @@ class NewDeal {
       shippingToContinent: shippingToContinent ?? this.shippingToContinent,
       shippingToContinentId:
           shippingToContinentId ?? this.shippingToContinentId,
-      // shippingToState: shippingToState ?? this.shippingToState,
-      // shippingToCity: shippingToCity ?? this.shippingToCity,
       showShippingRateCard: showShippingRateCard ?? this.showShippingRateCard,
       shippingRateCourierservice:
           shippingRateCourierservice ?? this.shippingRateCourierservice,
-      // shippingRate: shippingRate ?? this.shippingRate,
-      // shippingRateEstimatedDeliveryTime: shippingRateEstimatedDeliveryTime ??
-      //     this.shippingRateEstimatedDeliveryTime,
       selectedCountries: selectedCountries ?? this.selectedCountries,
       selectedStates: selectedStates ?? this.selectedStates,
       showAddPromotionMaterialCard:
@@ -374,8 +314,6 @@ class NewDeal {
       spaceLocationState: spaceLocationState ?? this.spaceLocationState,
       capacity: capacity ?? this.capacity,
       dimension: dimension ?? this.dimension,
-
-      ///  fetchedPromotionType: fetchedPromotionType ?? this.fetchedPromotionType,
       colors: colors ?? this.colors,
       materials: materials ?? this.materials,
       sizes: sizes ?? this.sizes,
@@ -384,8 +322,6 @@ class NewDeal {
           selectedTermsAndPolicy ?? this.selectedTermsAndPolicy,
       hasCreatedABussinessProfile:
           hasCreatedABussinessProfile ?? this.hasCreatedABussinessProfile,
-      //  fetchedCourierService:
-      //  fetchedCourierService ?? this.fetchedCourierService,
     );
   }
 }
