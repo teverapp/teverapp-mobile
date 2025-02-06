@@ -10,6 +10,7 @@ import 'package:tever/extensions/auth_status.dart';
 import 'package:tever/extensions/toast_status.dart';
 import 'package:tever/helpers/custom_colors.dart';
 import 'package:tever/model/custom_http_exception.dart';
+import 'package:tever/view/screens/sign_in_screen.dart';
 import 'package:tever/view/screens/tabs_screen.dart';
 import 'package:tever/view/widgets/complete_your_profile_screen/complete_profile_verification_bottom_sheet.dart';
 import 'package:tever/view/widgets/general/common/toast_service.dart';
@@ -71,6 +72,15 @@ class _CompleteProfileFormState extends ConsumerState<CompleteProfileForm> {
           subTitle: subTitle,
         );
       },
+    );
+  }
+
+  void _navigateToSignInScreen() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SignInScreen(),
+      ),
     );
   }
 
@@ -152,6 +162,12 @@ class _CompleteProfileFormState extends ConsumerState<CompleteProfileForm> {
       _showToast(message: error.toString(), status: ToastStatus.error.name);
     } catch (error) {
       String errorMessage = error.toString();
+
+      if (errorMessage == "401") {
+        _navigateToSignInScreen();
+
+        return;
+      }
 
       if (error is SocketException || error is HandshakeException) {
         errorMessage = "Network error, Please try again later. ";

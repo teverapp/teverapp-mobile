@@ -11,6 +11,8 @@ import 'package:tever/view/widgets/new_deal_screen.dart/new_deal_bottom_sheet_li
 
 class CountriesButtomSheet extends ConsumerStatefulWidget {
   final String type;
+  final bool refetchCountry;
+  final String selectedItem;
   final void Function(
       {required String value,
       required String id,
@@ -21,7 +23,9 @@ class CountriesButtomSheet extends ConsumerStatefulWidget {
       {super.key,
       required this.selectCountry,
       required this.id,
-      required this.type});
+      required this.type,
+      required this.selectedItem,
+      this.refetchCountry = false});
 
   @override
   ConsumerState<CountriesButtomSheet> createState() =>
@@ -79,11 +83,6 @@ class _CountriesButtomSheetState extends ConsumerState<CountriesButtomSheet> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // final newDealData = ref.watch(appResourceProvider);
-
-      // if (newDealData.fetchedCountries.isEmpty) {
-      //   _fetchCountryList(id: widget.id);
-      // }
       _fetchCountryList(id: widget.id);
     });
   }
@@ -98,13 +97,13 @@ class _CountriesButtomSheetState extends ConsumerState<CountriesButtomSheet> {
 
     final bottomSheetHeight = mediaQuery.height * 0.8;
 
-    String selectedItem = widget.type == DealsDropList.shippingFrom.name &&
-            newDealData.shippingFromCountry != null
-        ? newDealData.shippingFromCountry.toString()
-        : widget.type == DealsDropList.shippingTo.name &&
-                newDealData.shippingToCountry != null
-            ? newDealData.shippingToCountry.toString()
-            : "Select country";
+    // String selectedItem = widget.type == DealsDropList.shippingFrom.name &&
+    //         newDealData.shippingFromCountry != null
+    //     ? newDealData.shippingFromCountry.toString()
+    //     : widget.type == DealsDropList.shippingTo.name &&
+    //             newDealData.shippingToCountry != null
+    //         ? newDealData.shippingToCountry.toString()
+    //         : "Select country";
 
     return Container(
       width: double.infinity,
@@ -149,7 +148,7 @@ class _CountriesButtomSheetState extends ConsumerState<CountriesButtomSheet> {
                   : newDealData.shippingToCountry != null,
               dropdownItems: appResourceData.fetchedCountries,
               selectItem: _selectCountry,
-              selectedItem: selectedItem,
+              selectedItem: widget.selectedItem,
               errorMessage: _countryListErrorMessage,
               isLoading: _countryListIsLoading,
               retry: () => _fetchCountryList(id: widget.id))

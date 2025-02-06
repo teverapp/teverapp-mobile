@@ -25,6 +25,8 @@ extension NewDealUpdate on NewDeal {
         return copyWith(showAddAVarientBtn: value);
       case "dealPromotionType":
         return copyWith(dealPromotionType: value);
+      case "dealPromotionTypeId":
+        return copyWith(dealPromotionTypeId: value);
       case "dealPromotionValue":
         return copyWith(dealPromotionValue: value);
       case "dealPromotionCode":
@@ -55,10 +57,10 @@ extension NewDealUpdate on NewDeal {
         return copyWith(showShippingRateCard: value);
       case "shippingRateCourierservice":
         return copyWith(shippingRateCourierservice: value);
-      case "shippingRate":
-        return copyWith(shippingRate: value);
-      case "shippingRateEstimatedDeliveryTime":
-        return copyWith(shippingRateEstimatedDeliveryTime: value);
+      // case "shippingRate":
+      //   return copyWith(shippingRate: value);
+      // case "shippingRateEstimatedDeliveryTime":
+      //   return copyWith(shippingRateEstimatedDeliveryTime: value);
       case "showAddPromotionMaterialCard":
         return copyWith(showAddPromotionMaterialCard: value);
       case "showAddAffliateMarketingCard":
@@ -102,7 +104,8 @@ extension NewDealUpdate on NewDeal {
         return copyWith(contactInfoEmailError: value);
       case "contactInfoAddress":
         return copyWith(contactInfoAddress: value);
-
+      case "hasCreatedABussinessProfile":
+        return copyWith(hasCreatedABussinessProfile: value);
       default:
         throw Exception("Invalid key: $key");
     }

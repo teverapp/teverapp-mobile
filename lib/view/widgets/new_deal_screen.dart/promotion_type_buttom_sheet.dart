@@ -30,6 +30,9 @@ class _PromotionTypeButtomSheetState
     ref
         .read(newDealDataProvider.notifier)
         .updateNewDeal("dealPromotionType", value);
+    ref
+        .read(newDealDataProvider.notifier)
+        .updateNewDeal("dealPromotionTypeId", id);
 
     if (ModalRoute.of(context)?.isCurrent == true) {
       Navigator.of(context).pop();

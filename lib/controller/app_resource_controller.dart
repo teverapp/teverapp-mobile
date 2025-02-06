@@ -70,6 +70,9 @@ class AppResourceControllerNotifier extends StateNotifier<AppResource> {
             categoriesData.map((item) => CommonType.fromJson(item)).toList();
 
         state = state.copyWith(
+          termsAndCoditions: type == DealsDropList.termsAndConditions.value
+              ? fetchedResources
+              : state.termsAndCoditions,
           fetchedCourierServices: type == DealsDropList.couriers.value
               ? fetchedResources
               : state.fetchedCourierServices,
@@ -80,7 +83,8 @@ class AppResourceControllerNotifier extends StateNotifier<AppResource> {
                   type == DealsDropList.spaceLocationState.value)
               ? fetchedResources
               : state.fetchedStates,
-          fetchedCountries: type == DealsDropList.country.value
+          fetchedCountries: type == DealsDropList.country.value ||
+                  type == DealsDropList.allCountries.value
               ? fetchedResources
               : state.fetchedCountries,
           fetchedDealDetailsSubCategory:

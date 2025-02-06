@@ -10,17 +10,17 @@ extension DealsTabStatusExtension on DealsTabStatus {
   String get value {
     switch (this) {
       case DealsTabStatus.hotDeals:
-        return 'Hot deals';
+        return "Hot deals";
       case DealsTabStatus.services:
-        return 'Services';
+        return "Services";
       case DealsTabStatus.items:
-        return 'Items';
+        return "Items";
       case DealsTabStatus.events:
-        return 'Events';
+        return "Events";
       case DealsTabStatus.spaces:
-        return 'Spaces';
+        return "Spaces";
       default:
-        return '';
+        return "";
     }
   }
 }
@@ -28,6 +28,7 @@ extension DealsTabStatusExtension on DealsTabStatus {
 enum DealsDropList {
   dealCategories,
   dealSubcategories,
+  allCountries,
   country,
   state,
   spaceLocationState,
@@ -36,27 +37,32 @@ enum DealsDropList {
   multipleSelection,
   promotionTypes,
   couriers,
+  termsAndConditions,
 }
 
 extension DealsDropListExtension on DealsDropList {
   String get value {
     switch (this) {
       case DealsDropList.dealCategories:
-        return 'deal-categories';
+        return "deal-categories";
       case DealsDropList.dealSubcategories:
-        return 'deal-subcategories';
+        return "deal-subcategories";
       case DealsDropList.country:
-        return 'countries';
+        return "countries";
+      case DealsDropList.allCountries:
+        return "countries";
       case DealsDropList.state:
-        return 'states';
+        return "states";
       case DealsDropList.spaceLocationState:
-        return 'spaceLocationState';
+        return "spaceLocationState";
       case DealsDropList.promotionTypes:
-        return 'promotion-types';
+        return "promotion-types";
       case DealsDropList.couriers:
-        return 'couriers';
+        return "couriers";
+      case DealsDropList.termsAndConditions:
+        return "tnp";
       default:
-        return '';
+        return "";
     }
   }
 }

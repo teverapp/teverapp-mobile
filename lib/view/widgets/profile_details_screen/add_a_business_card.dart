@@ -12,7 +12,9 @@ class AddABusinessCard extends StatelessWidget {
     return GestureDetector(
       onTap: () => Navigator.of(context).push(
         MaterialPageRoute(
-            builder: (context) => const CreateYourBusinessProfileScreen()),
+            builder: (context) => const CreateYourBusinessProfileScreen(
+                  isCreatedFromNewDeals: true,
+                )),
       ),
       child: Container(
         width: double.infinity,

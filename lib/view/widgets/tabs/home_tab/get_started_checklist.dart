@@ -153,8 +153,11 @@ class GetStartedChecklist extends ConsumerWidget {
               subTitle: "Complete KYC to start using wallet"),
           const SizedBox(height: 8),
           _buildCard(
-              onTap: () =>
-                  _navigate(const CreateYourBusinessProfileScreen(), context),
+              onTap: () => _navigate(
+                  const CreateYourBusinessProfileScreen(
+                    isCreatedFromNewDeals: false,
+                  ),
+                  context),
               isCompleted: false,
               icon: "shop_add.png",
               iconBgColor: _customColors.customE5F0F9,

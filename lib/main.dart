@@ -103,7 +103,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           ),
         ),
       ),
-      home: SplashScreen(),
+      home: NewDealScreen(
+        selectedSection: 2,
+      ),
     );
   }
 }

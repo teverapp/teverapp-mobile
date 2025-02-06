@@ -106,6 +106,12 @@ class UserControllerNotifier extends StateNotifier<User> {
         return;
       }
 
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        await ref.read(accessTokenProvider.notifier).deleteToken();
+
+        throw CustomHttpException("401");
+      }
+
       final errorMessage = responseData['message'] ??
           responseData['error'] ??
           "Unknown error occurred";

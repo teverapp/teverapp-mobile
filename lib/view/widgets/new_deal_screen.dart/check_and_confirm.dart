@@ -127,7 +127,7 @@ class _CheckAndConfirmState extends ConsumerState<CheckAndConfirm> {
                 if (_selectedIndex == 0)
                   CheckAndConfirmCard(
                     label: "I want to promote...",
-                    value: newDealData.type.toString(),
+                    value: newDealData.type!.name.toString(),
                   ),
                 Divider(
                   color: _customColor.customEFEFEF,

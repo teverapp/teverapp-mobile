@@ -6,8 +6,8 @@ import 'package:tever/controller/app_resource_controller.dart';
 import 'package:tever/controller/new_deal_controller.dart';
 import 'package:tever/extensions/deals_tab.dart';
 import 'package:tever/helpers/custom_colors.dart';
+import 'package:tever/model/common.dart';
 import 'package:tever/model/custom_http_exception.dart';
-import 'package:tever/model/new_deal.dart';
 import 'package:tever/view/widgets/new_deal_screen.dart/new_deal_bottom_sheet_list.dart';
 
 class CourierServiceButtomSheet extends ConsumerStatefulWidget {
@@ -27,17 +27,18 @@ class _CourierServiceButtomSheetState
   bool _courierServiceTypeListIsLoading = false;
 
   void _shippingRateCourierservice(
-      {required String value,
+      {required String id,
+      required String value,
       required String rate,
       required String estimatedDeliveryTime}) {
-    ref
-        .read(newDealDataProvider.notifier)
-        .updateNewDeal("shippingRateCourierservice", value);
-
-    ref.read(newDealDataProvider.notifier).updateNewDeal("shippingRate", rate);
-
     ref.read(newDealDataProvider.notifier).updateNewDeal(
-        "shippingRateEstimatedDeliveryTime", estimatedDeliveryTime);
+        "shippingRateCourierservice",
+        CommonType(
+          name: value,
+          courierEstimatedTime: estimatedDeliveryTime,
+          courierShippingRate: rate,
+          id: id,
+        ));
 
     if (ModalRoute.of(context)?.isCurrent == true) {
       Navigator.of(context).pop();
@@ -139,7 +140,7 @@ class _CourierServiceButtomSheetState
               dropdownItems: appResourceData.fetchedCourierServices,
               selectCourierService: _shippingRateCourierservice,
               selectedItem: newDealData.shippingRateCourierservice != null
-                  ? newDealData.shippingRateCourierservice.toString()
+                  ? newDealData.shippingRateCourierservice!.name.toString()
                   : "Choose an option",
               errorMessage: _courierServiceListErrorMessage,
               isLoading: _courierServiceTypeListIsLoading,

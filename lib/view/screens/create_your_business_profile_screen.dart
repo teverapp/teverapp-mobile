@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:tever/helpers/custom_colors.dart';
-import 'package:tever/view/widgets/complete_your_profile_screen/complete_profile_form.dart';
 import 'package:tever/view/widgets/create_your_business_profile_screen.dart/create_buisness_profile_form.dart';
 import 'package:tever/view/widgets/general/common/setup_header.dart';
 
 class CreateYourBusinessProfileScreen extends StatelessWidget {
-  const CreateYourBusinessProfileScreen({super.key});
+  final bool isCreatedFromNewDeals;
+  const CreateYourBusinessProfileScreen({
+    super.key,
+    required this.isCreatedFromNewDeals,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,19 +33,21 @@ class CreateYourBusinessProfileScreen extends StatelessWidget {
                       )))),
         )),
       ),
-      body: const SafeArea(
+      body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SetupHeader(
+                const SetupHeader(
                   title: "Create your business profile",
                   subTitle:
                       "Provide the following details to set up your online store front",
                 ),
-                CreateBuisnessProfileForm()
+                CreateBuisnessProfileForm(
+                  isCreatedFromNewDeals: isCreatedFromNewDeals,
+                )
               ],
             ),
           ),

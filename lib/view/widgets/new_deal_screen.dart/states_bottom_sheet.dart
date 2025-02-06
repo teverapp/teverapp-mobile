@@ -7,11 +7,23 @@ import 'package:tever/controller/new_deal_controller.dart';
 import 'package:tever/extensions/deals_tab.dart';
 import 'package:tever/helpers/custom_colors.dart';
 import 'package:tever/model/custom_http_exception.dart';
-import 'package:tever/model/new_deal.dart';
 import 'package:tever/view/widgets/new_deal_screen.dart/new_deal_bottom_sheet_list.dart';
 
 class StatesBottomSheet extends ConsumerStatefulWidget {
-  const StatesBottomSheet({super.key});
+  final bool refetchCountry;
+  final bool hideBulletPoints;
+  final String selectedItem;
+  final String countryId;
+  final void Function(
+      {required String value, required String id, String? imageUrl}) selectItem;
+  const StatesBottomSheet({
+    super.key,
+    this.hideBulletPoints = true,
+    required this.selectedItem,
+    required this.selectItem,
+    required this.countryId,
+    this.refetchCountry = true,
+  });
 
   @override
   ConsumerState<StatesBottomSheet> createState() => _StatesBottomSheetState();
@@ -24,11 +36,9 @@ class _StatesBottomSheetState extends ConsumerState<StatesBottomSheet> {
 
   bool _stateListIsLoading = false;
 
-  void _addToSelectedStates(
+  void _selectedStates(
       {required String value, required String id, String? imageUrl}) {
-    ref
-        .read(newDealDataProvider.notifier)
-        .addSelectedStates(selectedState: LocationSelection(name: value));
+    widget.selectItem(id: id, value: value, imageUrl: imageUrl);
 
     if (ModalRoute.of(context)?.isCurrent == true) {
       Navigator.of(context).pop();
@@ -74,10 +84,8 @@ class _StatesBottomSheetState extends ConsumerState<StatesBottomSheet> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final appResourceData = ref.read(appResourceProvider);
 
-      final newDealsData = ref.read(newDealDataProvider);
-
-      if (appResourceData.fetchedStates.isEmpty) {
-        _fetchStateList(id: newDealsData.shippingToCountryId);
+      if (widget.refetchCountry) {
+        _fetchStateList(id: widget.countryId);
       }
     });
   }
@@ -129,16 +137,15 @@ class _StatesBottomSheetState extends ConsumerState<StatesBottomSheet> {
             ),
             NewDealBottomSheetList(
               showSearchField: true,
-              hideBulletPoint: true,
+              hideBulletPoint: widget.hideBulletPoints,
               key: const Key("state"),
               hasSelected: false,
               dropdownItems: appResourceData.fetchedStates,
-              selectItem: _addToSelectedStates,
-              selectedItem: "State",
+              selectItem: _selectedStates,
+              selectedItem: widget.selectedItem,
               errorMessage: _stateListErrorMessage,
               isLoading: _stateListIsLoading,
-              retry: () =>
-                  _fetchStateList(id: newDealsData.shippingToCountryId),
+              retry: () => _fetchStateList(id: widget.countryId),
             )
           ],
         ),

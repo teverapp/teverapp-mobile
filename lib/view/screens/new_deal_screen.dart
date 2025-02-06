@@ -14,7 +14,8 @@ import 'package:tever/view/widgets/product_item_details_screen.dart/product_imag
 import 'package:tever/view/widgets/product_item_details_screen.dart/source.dart';
 
 class NewDealScreen extends StatefulWidget {
-  const NewDealScreen({super.key});
+  final int? selectedSection;
+  const NewDealScreen({super.key, this.selectedSection});
 
   @override
   State<NewDealScreen> createState() => _NewDealScreenState();
@@ -23,7 +24,7 @@ class NewDealScreen extends StatefulWidget {
 class _NewDealScreenState extends State<NewDealScreen> {
   final CustomColors _customColor = const CustomColors();
 
-  int _selectedSection = 0;
+  late int _selectedSection;
 
   void _next(int value) {
     setState(() {
@@ -58,6 +59,8 @@ class _NewDealScreenState extends State<NewDealScreen> {
   @override
   void initState() {
     super.initState();
+    _selectedSection = widget.selectedSection ?? 0;
+
     _sections.addAll([
       NewDealForm(
         next: _next,

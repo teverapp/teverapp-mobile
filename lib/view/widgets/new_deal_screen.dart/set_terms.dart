@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tever/controller/business_profile.dart';
 import 'package:tever/controller/new_deal_controller.dart';
 import 'package:tever/helpers/custom_colors.dart';
-import 'package:tever/model/coordinate.dart';
-import 'package:tever/model/country.dart';
 import 'package:tever/view/widgets/general/common/custom_input_selection_button.dart';
-import 'package:tever/view/widgets/general/common/enter_address_labeled_text_field.dart';
+import 'package:tever/view/widgets/new_deal_screen.dart/add_a_business_button.dart';
+import 'package:tever/view/widgets/new_deal_screen.dart/check_and_confirm_card.dart';
+import 'package:tever/view/widgets/new_deal_screen.dart/post_deal_button.dart';
 import 'package:tever/view/widgets/new_deal_screen.dart/terms_and_policy_bottom_sheet.dart';
 import 'package:tever/view/widgets/new_deal_screen.dart/terms_and_policy_card.dart';
-import 'package:tever/view/widgets/new_event_screen/address_list_bottom_sheet.dart';
-import 'package:tever/view/widgets/sign_up_screen/email_input.dart';
-import 'package:tever/view/widgets/sign_up_screen/phone_input.dart';
 
 class SetTerms extends ConsumerStatefulWidget {
   final Function next;
@@ -30,89 +28,6 @@ class _SetTermsState extends ConsumerState<SetTerms> {
 
   int _selectedIndex = 0;
 
-  final TextEditingController _contactInfoBrandNameController =
-      TextEditingController();
-
-  final TextEditingController _contactInfoAboutBrandController =
-      TextEditingController();
-
-  final TextEditingController _contactInfoPhoneNoController =
-      TextEditingController();
-
-  final TextEditingController _contactInfoEmailController =
-      TextEditingController();
-
-  void _showAddressBottomSheet({String? searchInput}) {
-    showModalBottomSheet(
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(30),
-        ),
-      ),
-      context: context,
-      builder: (_) {
-        return AddressListButtomSheet(
-          title: "Enter address",
-          intialSearchInput: searchInput,
-          selectLocation: _selectEventLocation,
-        );
-      },
-    );
-  }
-
-  void _contactInfoBrandNameOnChangeHandler(String value) {
-    ref
-        .read(newDealDataProvider.notifier)
-        .updateNewDeal("contactInfoBrandName", value);
-  }
-
-  void _contactInfoAboutBrandOnChangeHandler(String value) {
-    ref
-        .read(newDealDataProvider.notifier)
-        .updateNewDeal("contactInfoAboutBrand", value);
-  }
-
-  void _selectEventLocation({required Coordinate location}) {
-    ref
-        .read(newDealDataProvider.notifier)
-        .updateNewDeal("contactInfoAddress", location);
-  }
-
-  void _emailValidator(bool? hasError) {
-    ref
-        .read(newDealDataProvider.notifier)
-        .updateNewDeal("contactInfoEmailError", hasError ?? false);
-  }
-
-  void _emailOnChangeHandler(String email) {
-    ref
-        .read(newDealDataProvider.notifier)
-        .updateNewDeal("contactInfoEmail", email);
-  }
-
-  void _phoneNumberValidator(bool? hasError) {
-    ref
-        .read(newDealDataProvider.notifier)
-        .updateNewDeal("contactInfoPhoneNumberError", hasError ?? false);
-  }
-
-  void _phoneNumberOnChangeHandler(String phoneNumber) {
-    ref
-        .read(newDealDataProvider.notifier)
-        .updateNewDeal("contactInfoPhoneNumber", phoneNumber);
-  }
-
-  void _selectCountry(Country selectedCountry) {
-    ref
-        .read(newDealDataProvider.notifier)
-        .updateNewDeal("contactInfoCountryFlag", selectedCountry.flag);
-    ref.read(newDealDataProvider.notifier).updateNewDeal(
-        "contactInfoCountryPhoneCode", selectedCountry.phoneCode);
-    ref.read(newDealDataProvider.notifier).updateNewDeal(
-        "contactInfoCountryAcronym", selectedCountry.countryCode);
-  }
-
   void _showTermsAndPolicyBottomSheet() {
     showModalBottomSheet(
       isScrollControlled: true,
@@ -129,63 +44,12 @@ class _SetTermsState extends ConsumerState<SetTerms> {
   }
 
   @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final newDealData = ref.watch(newDealDataProvider);
-
-      _contactInfoBrandNameController.text =
-          newDealData.contactInfoBrandName ?? "";
-
-      _contactInfoAboutBrandController.text =
-          newDealData.contactInfoAboutBrand ?? "";
-
-      _contactInfoPhoneNoController.text =
-          newDealData.contactInfoPhoneNumber ?? "";
-
-      _contactInfoEmailController.text = newDealData.contactInfoEmail ?? "";
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    _contactInfoAboutBrandController.dispose();
-
-    _contactInfoBrandNameController.dispose();
-
-    _contactInfoEmailController.dispose();
-
-    _contactInfoPhoneNoController.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     final newDealsData = ref.watch(newDealDataProvider);
 
-    bool hasValidTermsAndPolicies =
-        newDealsData.selectedTermsAndPolicy.isEmpty ||
-            newDealsData.selectedTermsAndPolicy.any((document) =>
-                document.title != "" ||
-                document.title != null ||
-                document.name != null ||
-                document.doc != null);
-
-    final isValid = !newDealsData.contactInfoEmailError! &&
-        !newDealsData.contactInfoPhoneNumberError! &&
-        newDealsData.contactInfoBrandName!.isNotEmpty &&
-        newDealsData.contactInfoAboutBrand!.isNotEmpty &&
-        newDealsData.contactInfoPhoneNumber!.isNotEmpty &&
-        newDealsData.contactInfoEmail!.isNotEmpty &&
-        newDealsData.contactInfoAddress != null &&
-        hasValidTermsAndPolicies;
-
-    print(
-        "chehchchchhcchch ${newDealsData.contactInfoPhoneNumber!.isNotEmpty}");
+    final businessProfileDealsData = ref.watch(businessProfileProvider);
 
     return Padding(
         padding: const EdgeInsets.only(right: 16, left: 16),
@@ -262,60 +126,6 @@ class _SetTermsState extends ConsumerState<SetTerms> {
                                     selectedItem: "Choose an option!",
                                     hasSelected: false,
                                     onTap: _showTermsAndPolicyBottomSheet),
-                                // TextFormField(
-                                //   style: TextStyle(
-                                //     color: _customColor.custom242424,
-                                //     fontSize: 14,
-                                //   ),
-                                //   z
-                                //   decoration: InputDecoration(
-                                //     hintText: "Choose all that apply",
-                                //     filled: true,
-                                //     fillColor: Colors.white,
-                                //     contentPadding: const EdgeInsets.all(16),
-                                //     focusedBorder: OutlineInputBorder(
-                                //       borderRadius: BorderRadius.circular(12),
-                                //       borderSide: BorderSide(
-                                //         color: _customColor.customEFEFEF,
-                                //         width: 1,
-                                //       ),
-                                //     ),
-                                //     suffixIconConstraints: const BoxConstraints(
-                                //         maxHeight: 150, maxWidth: 150),
-                                //     suffixIcon: Container(
-                                //       margin: const EdgeInsets.only(right: 16),
-                                //       child: Image.asset(
-                                //         "assets/icon/drop_down.png",
-                                //         height: 16,
-                                //         width: 16,
-                                //       ),
-                                //     ),
-                                //     enabledBorder: OutlineInputBorder(
-                                //       borderRadius: BorderRadius.circular(12),
-                                //       borderSide: BorderSide(
-                                //         color: _customColor.customEFEFEF,
-                                //         width: 1,
-                                //       ),
-                                //     ),
-                                //     border: OutlineInputBorder(
-                                //       borderRadius: BorderRadius.circular(12),
-                                //       borderSide: BorderSide(
-                                //         color: _customColor.customEFEFEF,
-                                //         width: 1,
-                                //       ),
-                                //     ),
-                                //     errorBorder: OutlineInputBorder(
-                                //       borderRadius: BorderRadius.circular(12),
-                                //       borderSide: const BorderSide(width: 1),
-                                //     ),
-                                //     hintStyle: TextStyle(
-                                //       fontSize: 14,
-                                //       fontWeight: FontWeight.w400,
-                                //       color: _customColor.custom888888,
-                                //     ),
-                                //   ),
-                                //   onChanged: (value) async {},
-                                // ),
                                 const SizedBox(height: 13),
                                 if (newDealsData
                                     .selectedTermsAndPolicy.isNotEmpty)
@@ -330,8 +140,11 @@ class _SetTermsState extends ConsumerState<SetTerms> {
                                                         .selectedTermsAndPolicy
                                                         .length -
                                                     1,
+                                            id: entry.value.id!,
+                                            docFile: entry.value.doc,
+                                            content: entry.value.content ?? "",
                                             title: entry.value.title.toString(),
-                                            fileName: entry.value.name))
+                                            fileName: entry.value.docName))
                                         .toList(),
                                   ),
                               ],
@@ -369,7 +182,7 @@ class _SetTermsState extends ConsumerState<SetTerms> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "Contact information",
+                                  "Store information (Required)",
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400,
@@ -388,194 +201,121 @@ class _SetTermsState extends ConsumerState<SetTerms> {
                               ]),
                         ),
                       ),
-                      if (_selectedIndex == 1) const SizedBox(height: 10),
-                      if (_selectedIndex == 1)
-                        Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Brand/business name",
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: _customColor.custom242424),
+                      if (_selectedIndex == 1) ...[
+                        const SizedBox(height: 10),
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (!newDealsData.hasCreatedABussinessProfile)
+                                const AddABusinessButton(),
+                              if (newDealsData.hasCreatedABussinessProfile) ...[
+                                CheckAndConfirmCard(
+                                  label: "Business Logo",
+                                  image: businessProfileDealsData.businessLogo,
                                 ),
-                                const SizedBox(height: 9),
-                                TextField(
-                                  controller: _contactInfoBrandNameController,
-                                  style: TextStyle(
-                                    color: _customColor.custom242424,
-                                    fontSize: 14,
-                                  ),
-                                  decoration: InputDecoration(
-                                    hintText: "Enter brand name",
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    contentPadding: const EdgeInsets.all(16),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(
-                                        color: _customColor.customEFEFEF,
-                                        width: 1,
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(
-                                        color: _customColor.customEFEFEF,
-                                        width: 1,
-                                      ),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(
-                                        color: _customColor.customEFEFEF,
-                                        width: 1,
-                                      ),
-                                    ),
-                                    errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(width: 1),
-                                    ),
-                                    hintStyle: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400,
-                                      color: _customColor.custom888888,
-                                    ),
-                                  ),
-                                  onChanged:
-                                      _contactInfoBrandNameOnChangeHandler,
+                                CheckAndConfirmCard(
+                                  label: "Business name",
+                                  value: businessProfileDealsData.businessName,
                                 ),
-                                const SizedBox(height: 24),
-                                Text(
-                                  "About brand/ business name",
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: _customColor.custom242424),
+                                CheckAndConfirmCard(
+                                  label: "Brand/ trade name",
+                                  value: businessProfileDealsData.brandName,
                                 ),
-                                const SizedBox(height: 9),
-                                SizedBox(
-                                  height: 120,
-                                  child: TextField(
-                                    controller:
-                                        _contactInfoAboutBrandController,
-                                    style: TextStyle(
-                                      color: _customColor.custom242424,
-                                      fontSize: 14,
-                                    ),
-                                    maxLines: null,
-                                    minLines: 5,
-                                    decoration: InputDecoration(
-                                      hintText: "Enter description",
-                                      filled: true,
-                                      fillColor: Colors.white,
-                                      contentPadding: const EdgeInsets.all(16),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                          color: _customColor.customEFEFEF,
-                                          width: 1,
+                                CheckAndConfirmCard(
+                                  label: "Business type",
+                                  value: businessProfileDealsData.businessType
+                                      .toString(),
+                                ),
+                                CheckAndConfirmCard(
+                                  label: "Industry",
+                                  value: businessProfileDealsData.industry
+                                      .toString(),
+                                ),
+                                CheckAndConfirmCard(
+                                  label: "About business",
+                                  value: businessProfileDealsData.aboutBusiness
+                                      .toString(),
+                                ),
+                                CheckAndConfirmCard(
+                                  label: "Business email address",
+                                  value:
+                                      businessProfileDealsData.email.toString(),
+                                ),
+                                CheckAndConfirmCard(
+                                  label: "Phone number",
+                                  value: businessProfileDealsData.phoneNumber
+                                      .toString(),
+                                ),
+                                CheckAndConfirmCard(
+                                  label: "Address",
+                                  value: businessProfileDealsData
+                                      .address!.locationName
+                                      .toString(),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
+                                  child: Container(
+                                    height: 37,
+                                    margin: const EdgeInsets.only(bottom: 10),
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            bottom: BorderSide(
+                                      width: 1,
+                                      color: _customColor.customEFEFEF,
+                                    ))),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Social media",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 12,
+                                              color: theme.colorScheme.primary),
                                         ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                          color: _customColor.customEFEFEF,
-                                          width: 1,
-                                        ),
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                          color: _customColor.customEFEFEF,
-                                          width: 1,
-                                        ),
-                                      ),
-                                      errorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: const BorderSide(width: 1),
-                                      ),
-                                      hintStyle: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400,
-                                        color: _customColor.custom888888,
-                                      ),
+                                        const SizedBox(width: 20),
+                                        Row(
+                                          children: [
+                                            Image.asset(
+                                              "assets/icon/${businessProfileDealsData.tiktokUrl.imageUrl}",
+                                              height: 20,
+                                              width: 20,
+                                            ),
+                                            const SizedBox(width: 16),
+                                            Image.asset(
+                                              "assets/icon/${businessProfileDealsData.twitterUrl.imageUrl}",
+                                              height: 20,
+                                              width: 20,
+                                            ),
+                                            const SizedBox(width: 16),
+                                            Image.asset(
+                                              "assets/icon/${businessProfileDealsData.facebookUrl.imageUrl}",
+                                              height: 20,
+                                              width: 20,
+                                            ),
+                                            const SizedBox(width: 16),
+                                            Image.asset(
+                                              "assets/icon/${businessProfileDealsData.instagramUrl.imageUrl}",
+                                              height: 20,
+                                              width: 20,
+                                            ),
+                                            const SizedBox(width: 16),
+                                            Image.asset(
+                                              "assets/icon/${businessProfileDealsData.threadsUrl.imageUrl}",
+                                              height: 20,
+                                              width: 20,
+                                            ),
+                                          ],
+                                        )
+                                      ],
                                     ),
-                                    onChanged:
-                                        _contactInfoAboutBrandOnChangeHandler,
                                   ),
-                                ),
-                                const SizedBox(height: 24),
-                                Text(
-                                  "Phone number",
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: _customColor.custom242424),
-                                ),
-                                const SizedBox(height: 9),
-                                PhoneInput(
-                                  controller: _contactInfoPhoneNoController,
-                                  validator: _phoneNumberValidator,
-                                  onChange: _phoneNumberOnChangeHandler,
-                                  bgColor: Colors.white,
-                                  hideDropDownIcon: false,
-                                  hideTopGap: true,
-                                  selectCountry: _selectCountry,
-                                  selectedCountryAcronym:
-                                      newDealsData.contactInfoCountryAcronym,
-                                  selectedCountryFlag:
-                                      newDealsData.contactInfoCountryFlag,
-                                  selectedCountryPhoneCode:
-                                      newDealsData.contactInfoCountryPhoneCode,
-                                ),
-                                const SizedBox(height: 24),
-                                Text(
-                                  "Email address",
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: _customColor.custom242424),
-                                ),
-                                const SizedBox(height: 9),
-                                EmailInput(
-                                  controller: _contactInfoEmailController,
-                                  bgColor: Colors.white,
-                                  hideTopGap: true,
-                                  onChange: _emailOnChangeHandler,
-                                  key: const ValueKey("emailInput"),
-                                  validator: _emailValidator,
-                                ),
-                                const SizedBox(height: 22),
-                                CustomInputSelectionButton(
-                                  hideTrailingIcon: true,
-                                  selectedItem:
-                                      newDealsData.contactInfoAddress != null
-                                          ? newDealsData
-                                              .contactInfoAddress!.locationName
-                                              .toString()
-                                          : "Enter your address",
-                                  hasSelected:
-                                      newDealsData.contactInfoAddress != null,
-                                  onTap: () => _showAddressBottomSheet(
-                                    searchInput: newDealsData
-                                        .contactInfoAddress?.locationName,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  "Enter the address of your store/business location",
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400,
-                                      color: _customColor.custom242424),
-                                ),
-                                const SizedBox(height: 20),
-                              ],
-                            )),
+                                )
+                              ]
+                            ])
+                      ],
                       Divider(
                         color: _customColor.customEFEFEF,
                         thickness: 1,
@@ -612,31 +352,7 @@ class _SetTermsState extends ConsumerState<SetTerms> {
                   ),
                 ),
                 const SizedBox(width: 20),
-                Expanded(
-                  child: SizedBox(
-                    height: 48,
-                    width: double.infinity,
-                    child: TextButton(
-                      onPressed: () => isValid ? widget.next(3) : null,
-                      style: TextButton.styleFrom(
-                        backgroundColor: isValid
-                            ? theme.primaryColor
-                            : _customColor.customD1D1D1,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                      ),
-                      child: const Text(
-                        "Post deal",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                )
+                PostDealButton(next: widget.next)
               ],
             ),
             const SizedBox(height: 40),

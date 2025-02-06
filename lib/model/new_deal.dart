@@ -22,6 +22,7 @@ class NewDeal {
   String? description;
   String? price;
   String? dealPromotionType;
+  String? dealPromotionTypeId;
   String? dealPromotionValue;
   String? dealPromotionCode;
   String? dealPromotionValidDate;
@@ -41,10 +42,10 @@ class NewDeal {
   String? shippingToCountryId;
   // String? shippingToState;
   // String? shippingToCity;
-  bool? showShippingRateCard;
-  String? shippingRateCourierservice;
-  String? shippingRate;
-  String? shippingRateEstimatedDeliveryTime;
+  bool showShippingRateCard;
+  CommonType? shippingRateCourierservice;
+  // String? shippingRate;
+  // String? shippingRateEstimatedDeliveryTime;
   List<LocationSelection>? selectedCountries;
   List<LocationSelection>? selectedStates;
   bool showAddPromotionMaterialCard;
@@ -53,25 +54,26 @@ class NewDeal {
   String? duration;
   String? spaceLocationCountry;
   String? selectedCountryFromAllCountryId;
-  String? spaceLocationAddress;
+  Coordinate? spaceLocationAddress;
   String? spaceLocationCity;
   String? spaceLocationState;
   String? capacity;
   String? dimension;
-  String? contactInfoCountryFlag;
-  String? contactInfoCountryPhoneCode;
-  String? contactInfoCountryAcronym;
-  bool? contactInfoPhoneNumberError;
-  String? contactInfoPhoneNumber;
-  String? contactInfoBrandName;
-  String? contactInfoAboutBrand;
-  String? contactInfoEmail;
-  bool? contactInfoEmailError;
-  Coordinate? contactInfoAddress;
+  // String? contactInfoCountryFlag;
+  // String? contactInfoCountryPhoneCode;
+  // String? contactInfoCountryAcronym;
+  // String? contactInfoPhoneNumber;
+  // String? contactInfoBrandName;
+  // String? contactInfoAboutBrand;
+  // String? contactInfoEmail;
+  // bool? contactInfoEmailError;
+  bool hasCreatedABussinessProfile;
+  // Coordinate? contactInfoAddress;
   // List<CommonType> fetchedPromotionType;
   // List<CommonType> fetchedCourierService;
 
   NewDeal({
+    required this.hasCreatedABussinessProfile,
     required this.type,
     required this.colors,
     required this.sizes,
@@ -90,6 +92,7 @@ class NewDeal {
     required this.contactForQuote,
     required this.showAddAVarientBtn,
     required this.dealPromotionType,
+    required this.dealPromotionTypeId,
     required this.dealPromotionValue,
     required this.dealPromotionCode,
     required this.dealPromotionValidDate,
@@ -108,8 +111,8 @@ class NewDeal {
     required this.shippingToContinentId,
     required this.showShippingRateCard,
     required this.shippingRateCourierservice,
-    required this.shippingRate,
-    required this.shippingRateEstimatedDeliveryTime,
+    // required this.shippingRate,
+    // required this.shippingRateEstimatedDeliveryTime,
     required this.selectedCountries,
     required this.selectedStates,
     required this.showAddPromotionMaterialCard,
@@ -123,16 +126,6 @@ class NewDeal {
     required this.spaceLocationState,
     required this.capacity,
     required this.dimension,
-    required this.contactInfoCountryFlag,
-    required this.contactInfoCountryPhoneCode,
-    required this.contactInfoCountryAcronym,
-    required this.contactInfoPhoneNumberError,
-    required this.contactInfoPhoneNumber,
-    required this.contactInfoBrandName,
-    required this.contactInfoAboutBrand,
-    required this.contactInfoEmail,
-    required this.contactInfoEmailError,
-    required this.contactInfoAddress,
     // required this.fetchedPromotionType,
     required this.earningValues,
     required this.selectedTermsAndPolicy,
@@ -142,6 +135,7 @@ class NewDeal {
   factory NewDeal.defaultState() {
     return NewDeal(
       type: dealTypeDropdownItems[0],
+      hasCreatedABussinessProfile: false,
       // dealDetailsCategory: [],
       // dealDetailsSubCategory: [],
       categoryId: null,
@@ -156,6 +150,7 @@ class NewDeal {
       contactForQuote: false,
       showAddAVarientBtn: true,
       dealPromotionType: null,
+      dealPromotionTypeId: null,
       dealPromotionValue: "",
       dealPromotionCode: "",
       dealPromotionValidDate: null,
@@ -173,9 +168,14 @@ class NewDeal {
       shippingToContinent: null,
       shippingToContinentId: null,
       showShippingRateCard: false,
-      shippingRateCourierservice: null,
-      shippingRate: null,
-      shippingRateEstimatedDeliveryTime: null,
+      shippingRateCourierservice: CommonType(
+        id: null,
+        name: "",
+        courierShippingRate: null,
+        courierEstimatedTime: null,
+      ),
+      // shippingRate: null,
+      // shippingRateEstimatedDeliveryTime: null,
       selectedCountries: [],
       selectedStates: [],
       showAddPromotionMaterialCard: false,
@@ -184,22 +184,11 @@ class NewDeal {
       duration: null,
       spaceLocationCountry: null,
       selectedCountryFromAllCountryId: null,
-      spaceLocationAddress: "",
+      spaceLocationAddress: null,
       spaceLocationCity: "",
       spaceLocationState: null,
       capacity: "",
       dimension: "",
-      contactInfoCountryFlag: null,
-      contactInfoCountryPhoneCode: null,
-      contactInfoCountryAcronym: null,
-      contactInfoPhoneNumberError: true,
-      contactInfoPhoneNumber: "",
-      contactInfoBrandName: "",
-      contactInfoAboutBrand: "",
-      contactInfoEmail: "",
-      contactInfoEmailError: true,
-      contactInfoAddress: null,
-      // fetchedPromotionType: [],
       selectedTermsAndPolicy: [],
       //fetchedCourierService: [],
       colors: [
@@ -269,6 +258,7 @@ class NewDeal {
     bool? contactForQuote,
     bool? showAddAVarientBtn,
     String? dealPromotionType,
+    String? dealPromotionTypeId,
     String? dealPromotionValue,
     String? dealPromotionCode,
     String? dealPromotionValidDate,
@@ -284,9 +274,9 @@ class NewDeal {
     String? shippingToContinent,
     String? shippingToContinentId,
     bool? showShippingRateCard,
-    String? shippingRateCourierservice,
-    String? shippingRate,
-    String? shippingRateEstimatedDeliveryTime,
+    CommonType? shippingRateCourierservice,
+    // String? shippingRate,
+    // String? shippingRateEstimatedDeliveryTime,
     List<LocationSelection>? selectedCountries,
     List<LocationSelection>? selectedStates,
     bool? showAddPromotionMaterialCard,
@@ -295,7 +285,7 @@ class NewDeal {
     String? duration,
     String? spaceLocationCountry,
     String? selectedCountryFromAllCountryId,
-    String? spaceLocationAddress,
+    Coordinate? spaceLocationAddress,
     String? spaceLocationCity,
     String? spaceLocationState,
     String? capacity,
@@ -316,6 +306,7 @@ class NewDeal {
     List<CommonType>? sizes,
     List<CommonType>? earningValues,
     List<DocumentFile>? selectedTermsAndPolicy,
+    bool? hasCreatedABussinessProfile,
     // List<CommonType>? fetchedCourierService,
   }) {
     print(
@@ -339,6 +330,7 @@ class NewDeal {
       contactForQuote: contactForQuote ?? this.contactForQuote,
       showAddAVarientBtn: showAddAVarientBtn ?? this.showAddAVarientBtn,
       dealPromotionType: dealPromotionType ?? this.dealPromotionType,
+      dealPromotionTypeId: dealPromotionTypeId ?? this.dealPromotionTypeId,
       dealPromotionValue: dealPromotionValue ?? this.dealPromotionValue,
       dealPromotionCode: dealPromotionCode ?? this.dealPromotionCode,
       dealPromotionValidDate:
@@ -363,9 +355,9 @@ class NewDeal {
       showShippingRateCard: showShippingRateCard ?? this.showShippingRateCard,
       shippingRateCourierservice:
           shippingRateCourierservice ?? this.shippingRateCourierservice,
-      shippingRate: shippingRate ?? this.shippingRate,
-      shippingRateEstimatedDeliveryTime: shippingRateEstimatedDeliveryTime ??
-          this.shippingRateEstimatedDeliveryTime,
+      // shippingRate: shippingRate ?? this.shippingRate,
+      // shippingRateEstimatedDeliveryTime: shippingRateEstimatedDeliveryTime ??
+      //     this.shippingRateEstimatedDeliveryTime,
       selectedCountries: selectedCountries ?? this.selectedCountries,
       selectedStates: selectedStates ?? this.selectedStates,
       showAddPromotionMaterialCard:
@@ -382,23 +374,6 @@ class NewDeal {
       spaceLocationState: spaceLocationState ?? this.spaceLocationState,
       capacity: capacity ?? this.capacity,
       dimension: dimension ?? this.dimension,
-      contactInfoCountryFlag:
-          contactInfoCountryFlag ?? this.contactInfoCountryFlag,
-      contactInfoCountryPhoneCode:
-          contactInfoCountryPhoneCode ?? this.contactInfoCountryPhoneCode,
-      contactInfoCountryAcronym:
-          contactInfoCountryAcronym ?? this.contactInfoCountryAcronym,
-      contactInfoPhoneNumberError:
-          contactInfoPhoneNumberError ?? this.contactInfoPhoneNumberError,
-      contactInfoPhoneNumber:
-          contactInfoPhoneNumber ?? this.contactInfoPhoneNumber,
-      contactInfoBrandName: contactInfoBrandName ?? this.contactInfoBrandName,
-      contactInfoAboutBrand:
-          contactInfoAboutBrand ?? this.contactInfoAboutBrand,
-      contactInfoEmail: contactInfoEmail ?? this.contactInfoEmail,
-      contactInfoEmailError:
-          contactInfoEmailError ?? this.contactInfoEmailError,
-      contactInfoAddress: contactInfoAddress ?? this.contactInfoAddress,
 
       ///  fetchedPromotionType: fetchedPromotionType ?? this.fetchedPromotionType,
       colors: colors ?? this.colors,
@@ -407,6 +382,8 @@ class NewDeal {
       earningValues: earningValues ?? this.earningValues,
       selectedTermsAndPolicy:
           selectedTermsAndPolicy ?? this.selectedTermsAndPolicy,
+      hasCreatedABussinessProfile:
+          hasCreatedABussinessProfile ?? this.hasCreatedABussinessProfile,
       //  fetchedCourierService:
       //  fetchedCourierService ?? this.fetchedCourierService,
     );
@@ -443,21 +420,30 @@ final List<CommonType> regions = [
 ];
 
 class LocationSelection {
+  final String id;
   final String? flag;
   final String? name;
 
-  LocationSelection({this.flag, this.name});
+  LocationSelection({
+    this.flag,
+    this.name,
+    required this.id,
+  });
 }
 
 class DocumentFile {
+  String? id;
   String? title;
-  String? name;
+  String? content;
+  String? docName;
   File? doc;
 
   DocumentFile({
-    this.title = "",
-    this.name,
+    this.title,
+    this.content,
     this.doc,
+    this.id,
+    this.docName,
   });
 }
 

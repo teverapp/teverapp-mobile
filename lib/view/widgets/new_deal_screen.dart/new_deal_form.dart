@@ -64,6 +64,7 @@ class _NewDealFormState extends ConsumerState<NewDealForm> {
         newDealInfo.subCategoryId != null &&
         newDealInfo.description!.isNotEmpty &&
         newDealInfo.dealPromotionType != null &&
+        newDealInfo.dealPromotionTypeId != null &&
         newDealInfo.dealPromotionValue!.isNotEmpty &&
         newDealInfo.dealPromotionCode!.isNotEmpty &&
         newDealInfo.dealPromotionValidDate != null &&
@@ -77,9 +78,7 @@ class _NewDealFormState extends ConsumerState<NewDealForm> {
         // newDealInfo.shippingRateEstimatedDeliveryTime
         // newDealInfo.shippingRate
         (newDealInfo.showShippingRateCard!
-            ? newDealInfo.shippingRateCourierservice != null &&
-                newDealInfo.shippingRateEstimatedDeliveryTime != null &&
-                newDealInfo.shippingRate != null
+            ? newDealInfo.shippingRateCourierservice?.id != null
             : true) &&
         (!newDealInfo.showAddPromotionMaterialCard ||
             newDealInfo.dealPromotionMaterialImage != null) &&
@@ -112,7 +111,7 @@ class _NewDealFormState extends ConsumerState<NewDealForm> {
         newDealInfo.subCategoryId != null &&
         newDealInfo.description!.isNotEmpty &&
         newDealInfo.spaceLocationCountry != null &&
-        newDealInfo.spaceLocationAddress!.isNotEmpty &&
+        newDealInfo.spaceLocationAddress != null &&
         newDealInfo.spaceLocationCity!.isNotEmpty &&
         newDealInfo.spaceLocationState != null &&
         newDealInfo.dealDetailsImages!.any((value) => value != null) &&

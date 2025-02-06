@@ -86,4 +86,49 @@ class InputValidationController {
     );
     return urlRegExp.hasMatch(url);
   }
+
+  bool validateTikTokProfileUrl(String value) {
+    // Matches URLs like: https://www.tiktok.com/@username or tiktok.com/@username
+    final RegExp pattern = RegExp(
+      r'^(https?:\/\/)?(www\.)?tiktok\.com\/@[\w\-.]+\/?$',
+      caseSensitive: false,
+    );
+    return pattern.hasMatch(value);
+  }
+
+  bool validateTwitterProfileUrl(String value) {
+    // Matches URLs like: https://twitter.com/username or twitter.com/username
+    final RegExp pattern = RegExp(
+      r'^(https?:\/\/)?(www\.)?twitter\.com\/[\w_]+\/?$',
+      caseSensitive: false,
+    );
+    return pattern.hasMatch(value);
+  }
+
+  bool validateInstagramProfileUrl(String value) {
+    // Matches URLs like: https://www.instagram.com/username or instagram.com/username
+    final RegExp pattern = RegExp(
+      r'^(https?:\/\/)?(www\.)?instagram\.com\/[\w\.]+\/?$',
+      caseSensitive: false,
+    );
+    return pattern.hasMatch(value);
+  }
+
+  bool validateThreadsProfileUrl(String value) {
+    // Matches URLs like: https://www.threads.net/username or threads.net/username
+    final RegExp pattern = RegExp(
+      r'^(https?:\/\/)?(www\.)?threads\.net\/[\w\.]+\/?$',
+      caseSensitive: false,
+    );
+    return pattern.hasMatch(value);
+  }
+
+  bool validateFacebookProfileUrl(String value) {
+    // Matches URLs like: https://www.facebook.com/username or facebook.com/username
+    final RegExp pattern = RegExp(
+      r'^(https?:\/\/)?(www\.)?facebook\.com\/[\w\.]+\/?$',
+      caseSensitive: false,
+    );
+    return pattern.hasMatch(value);
+  }
 }

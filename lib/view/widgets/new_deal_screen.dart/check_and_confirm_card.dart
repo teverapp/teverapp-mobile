@@ -1,15 +1,19 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:tever/helpers/custom_colors.dart';
 
 class CheckAndConfirmCard extends StatelessWidget {
   final String label;
-  final String value;
+  final String? value;
+  final File? image;
   final bool? showBottomMargin;
 
   const CheckAndConfirmCard(
       {super.key,
       required this.label,
-      required this.value,
+      this.value,
+      this.image,
       this.showBottomMargin = true});
 
   final CustomColors _customColor = const CustomColors();
@@ -40,17 +44,38 @@ class CheckAndConfirmCard extends StatelessWidget {
                   color: theme.colorScheme.primary),
             ),
             const SizedBox(width: 20),
-            Expanded(
-                child: Text(
-              value,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.end,
-              style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                  color: _customColor.custom242424),
-            ))
+            if (image != null)
+              Container(
+                alignment: Alignment.center,
+                height: 32,
+                width: 32,
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _customColor.customEFEFEF,
+                    border:
+                        Border.all(width: 1, color: _customColor.customE7E7E7)),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.file(
+                    image!,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
+                ),
+              ),
+            if (value != null)
+              Expanded(
+                  child: Text(
+                value.toString(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
+                style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: _customColor.custom242424),
+              ))
           ],
         ),
       ),

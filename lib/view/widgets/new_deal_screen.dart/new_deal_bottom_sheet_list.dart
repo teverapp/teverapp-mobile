@@ -14,7 +14,8 @@ class NewDealBottomSheetList extends StatefulWidget {
       required String id,
       String? imageUrl})? selectItem;
   final void Function(
-      {required String value,
+      {required String id,
+      required String value,
       required String rate,
       required String estimatedDeliveryTime})? selectCourierService;
   final String selectedItem;
@@ -223,6 +224,7 @@ class _NewDealBottomSheetListState extends State<NewDealBottomSheetList> {
                               onTap: () {
                                 if (widget.selectCourierService != null) {
                                   widget.selectCourierService!(
+                                      id: filteredropdownItems[index].id!,
                                       value: filteredropdownItems[index].name,
                                       rate: filteredropdownItems[index]
                                           .courierShippingRate

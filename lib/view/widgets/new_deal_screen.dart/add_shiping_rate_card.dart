@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tever/controller/new_deal_controller.dart';
 import 'package:tever/extensions/toast_status.dart';
 import 'package:tever/helpers/custom_colors.dart';
+import 'package:tever/model/new_deal.dart';
 import 'package:tever/view/widgets/general/common/custom_drop_down.dart';
 import 'package:tever/view/widgets/general/common/custom_input_selection_button.dart';
 import 'package:tever/view/widgets/general/common/toast_service.dart';
@@ -40,16 +41,20 @@ class _AddShipingRateCardState extends ConsumerState<AddShipingRateCard> {
     }
   }
 
-  _validateCourierService() {
+  _validateCourierService({String? rate}) {
     final newDealData = ref.watch(newDealDataProvider);
 
-    if (newDealData.shippingRateCourierservice == null) {
+    if (newDealData.shippingRateCourierservice?.id == null) {
       _showToast(
         message: "Please select courier service!",
         status: ToastStatus.error.name,
       );
     } else {
-      _showCourierServiceBottomSheet();
+      if (rate != null) {
+        ref.read(newDealDataProvider.notifier).updateCourierServiceRate(rate);
+      } else {
+        _showCourierServiceBottomSheet();
+      }
     }
   }
 
@@ -74,15 +79,15 @@ class _AddShipingRateCardState extends ConsumerState<AddShipingRateCard> {
         .updateNewDeal("showShippingRateCard", false);
 
     print("calleddddd");
-    ref
-        .read(newDealDataProvider.notifier)
-        .updateNewDeal("shippingRateCourierservice", "");
+    ref.read(newDealDataProvider.notifier).updateNewDeal(
+        "shippingRateCourierservice",
+        NewDeal.defaultState().shippingRateCourierservice);
 
-    ref
-        .read(newDealDataProvider.notifier)
-        .updateNewDeal("shippingRateEstimatedDeliveryTime", "");
+    // ref
+    //     .read(newDealDataProvider.notifier)
+    //     .updateNewDeal("shippingRateEstimatedDeliveryTime", "");
 
-    ref.read(newDealDataProvider.notifier).updateNewDeal("shippingRate", "");
+    // ref.read(newDealDataProvider.notifier).updateNewDeal("shippingRate", "");
   }
 
   // @override
@@ -107,15 +112,14 @@ class _AddShipingRateCardState extends ConsumerState<AddShipingRateCard> {
   Widget build(BuildContext context) {
     final newDealData = ref.watch(newDealDataProvider);
 
-    _rateController.text =
-        newDealData.shippingRate != null && newDealData.shippingRate != ""
-            ? newDealData.shippingRate.toString()
-            : "";
+    _rateController.text = newDealData.shippingRateCourierservice?.id != null
+        ? newDealData.shippingRateCourierservice!.courierShippingRate.toString()
+        : "";
 
     _estimatedDeliveryTimeController.text =
-        newDealData.shippingRateEstimatedDeliveryTime != null &&
-                newDealData.shippingRateEstimatedDeliveryTime != ""
-            ? newDealData.shippingRateEstimatedDeliveryTime.toString()
+        newDealData.shippingRateCourierservice?.id != null
+            ? newDealData.shippingRateCourierservice!.courierEstimatedTime
+                .toString()
             : "";
 
     print("calleddddd build ${_rateController.text}");
@@ -157,12 +161,10 @@ class _AddShipingRateCardState extends ConsumerState<AddShipingRateCard> {
           ),
           const SizedBox(height: 9),
           CustomInputSelectionButton(
-            hasSelected: newDealData.shippingRateCourierservice != null ||
-                newDealData.shippingRateCourierservice != "",
+            hasSelected: newDealData.shippingRateCourierservice?.id != null,
             onTap: _showCourierServiceBottomSheet,
-            selectedItem: newDealData.shippingRateCourierservice != null &&
-                    newDealData.shippingRateCourierservice != ""
-                ? newDealData.shippingRateCourierservice.toString()
+            selectedItem: newDealData.shippingRateCourierservice?.id != null
+                ? newDealData.shippingRateCourierservice!.name.toString()
                 : "Choose an option",
           ),
           // CustomDropDown(
@@ -183,7 +185,7 @@ class _AddShipingRateCardState extends ConsumerState<AddShipingRateCard> {
           ),
           const SizedBox(height: 9),
           TextField(
-            readOnly: true,
+            readOnly: newDealData.shippingRateCourierservice?.id == null,
             controller: _rateController,
             style: TextStyle(
               color: _customColor.custom242424,
@@ -225,7 +227,11 @@ class _AddShipingRateCardState extends ConsumerState<AddShipingRateCard> {
                 color: _customColor.custom888888,
               ),
             ),
-            onTap: _validateCourierService,
+            onTap: () => _validateCourierService(
+              rate: newDealData.shippingRateCourierservice?.courierShippingRate,
+            ),
+            onChanged: (value) =>
+                _validateCourierService(rate: value.isEmpty ? null : value),
           ),
           const SizedBox(height: 16),
           Text(
@@ -280,7 +286,7 @@ class _AddShipingRateCardState extends ConsumerState<AddShipingRateCard> {
                 color: _customColor.custom888888,
               ),
             ),
-            onTap: _validateCourierService,
+            onTap: () => _validateCourierService(),
           ),
           // CustomDropDown(
           //   hasSelected: newDealData.shippingRateEstimatedDeliveryTime != null,

@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tever/controller/app_resource_controller.dart';
 
 import 'package:tever/controller/new_deal_controller.dart';
+import 'package:tever/extensions/deals_tab.dart';
 import 'package:tever/helpers/custom_colors.dart';
-import 'package:tever/model/common.dart';
+import 'package:tever/model/custom_http_exception.dart';
 import 'package:tever/model/new_deal.dart';
 import 'package:tever/view/widgets/new_deal_screen.dart/new_deal_bottom_sheet_list.dart';
 
@@ -19,11 +23,13 @@ class _TermsAndPolicyBottomSheetState
     extends ConsumerState<TermsAndPolicyBottomSheet> {
   final CustomColors _customColor = const CustomColors();
 
-  void _selectTermsAndPolicy(
+  String? _termsAndPolicyTypeListErrorMessage;
+
+  bool _termsAndPolicyTypeListIsLoading = false;
+
+  void _selectTermsAndPolicyFile(
       {required String value, required String id, String? imageUrl}) {
-    final selectedFile = DocumentFile(
-      title: value,
-    );
+    final selectedFile = DocumentFile(title: value, content: "", id: id);
 
     ref
         .read(newDealDataProvider.notifier)
@@ -34,68 +40,54 @@ class _TermsAndPolicyBottomSheetState
     }
   }
 
-  final List<CommonType> _earningValues = [
-    CommonType(
-      id: "1",
-      name: "General terms and conditions",
-    ),
-    CommonType(
-      id: "2",
-      name: "Pricing and payment policies",
-    ),
-    CommonType(
-      id: "3",
-      name: "Cancellation and rescheduling policies",
-    ),
-    CommonType(
-      id: "4",
-      name: "General terms and conditions",
-    ),
-    CommonType(
-      id: "5",
-      name: "Pricing and payment policies",
-    ),
-    CommonType(
-      id: "6",
-      name: "Privacy and data policies",
-    ),
-    CommonType(
-      id: "7",
-      name: "General terms and conditions",
-    ),
-    CommonType(
-      id: "8",
-      name: "Pricing and payment policies",
-    ),
-    CommonType(
-      id: "9",
-      name: "Liability and disclaimers",
-    ),
-    CommonType(
-      id: "10",
-      name: "Content and listing policies",
-    ),
-    CommonType(
-      id: "11",
-      name: "Safety and security policies",
-    ),
-    CommonType(
-      id: "12",
-      name: "Dispute resolution policies",
-    ),
-    CommonType(
-      id: "13",
-      name: "Intellectual property policies",
-    ),
-    CommonType(
-      id: "14",
-      name: "Legal compliance policies",
-    )
-  ];
+  Future<void> _fetchTermsAndPolicy() async {
+    setState(() {
+      _termsAndPolicyTypeListIsLoading = true;
+      _termsAndPolicyTypeListErrorMessage = null;
+    });
+
+    try {
+      await ref.read(appResourceProvider.notifier).fetchResources(
+            type: DealsDropList.termsAndConditions.value,
+          );
+    } on CustomHttpException catch (error) {
+      setState(() {
+        _termsAndPolicyTypeListErrorMessage = error.toString();
+      });
+    } catch (error) {
+      String errorMessage = error.toString();
+
+      if (error is SocketException || error is HandshakeException) {
+        errorMessage = "Network error, Please try again later. ";
+      }
+
+      setState(() {
+        _termsAndPolicyTypeListErrorMessage = errorMessage;
+      });
+    } finally {
+      setState(() {
+        _termsAndPolicyTypeListIsLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final appResourceData = ref.watch(appResourceProvider);
+
+      if (appResourceData.termsAndCoditions.isEmpty) {
+        _fetchTermsAndPolicy();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final dealsData = ref.read(newDealDataProvider);
+    final newDealData = ref.read(newDealDataProvider);
+
+    final appResourceData = ref.watch(appResourceProvider);
 
     final mediaQuery = MediaQuery.of(context).size;
 
@@ -138,11 +130,15 @@ class _TermsAndPolicyBottomSheetState
             ),
             const SizedBox(height: 14),
             NewDealBottomSheetList(
-                hasSelected: true,
-                hideBulletPoint: true,
-                dropdownItems: _earningValues,
-                selectItem: _selectTermsAndPolicy,
-                selectedItem: dealsData.type!.name.toString())
+              hasSelected: true,
+              hideBulletPoint: true,
+              dropdownItems: appResourceData.termsAndCoditions,
+              selectItem: _selectTermsAndPolicyFile,
+              selectedItem: "",
+              errorMessage: _termsAndPolicyTypeListErrorMessage,
+              isLoading: _termsAndPolicyTypeListIsLoading,
+              retry: _fetchTermsAndPolicy,
+            )
           ],
         ),
       ),

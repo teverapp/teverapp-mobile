@@ -49,7 +49,11 @@ class _NewDealShoppingInfoState extends ConsumerState<NewDealShoppingInfo> {
   void _addToSelectedCountries(
       {required String value, required String id, String? imageUrl}) {
     ref.read(newDealDataProvider.notifier).addToSelectedCountry(
-        country: LocationSelection(name: value, flag: imageUrl));
+            country: LocationSelection(
+          name: value,
+          flag: imageUrl,
+          id: id,
+        ));
   }
 
   void _removeSelectedCountry(int index) {
@@ -93,7 +97,8 @@ class _NewDealShoppingInfoState extends ConsumerState<NewDealShoppingInfo> {
   //type: DealsDropList.shippingFrom.name,
 
   void _showCountryToBottomSheet(
-      {required type,
+      {required String selectedItem,
+      required String type,
       required Function(
               {required String value, required String id, String? imageUrl})
           selectCountry,
@@ -112,14 +117,17 @@ class _NewDealShoppingInfoState extends ConsumerState<NewDealShoppingInfo> {
         return CountriesButtomSheet(
           type: type,
           id: id,
+          refetchCountry: true,
           selectCountry: selectCountry,
+          selectedItem: selectedItem,
         );
       },
     );
   }
 
   void _showCountryToUsingContinentIdBottomSheet(
-      {required type,
+      {required String selectedItem,
+      required String type,
       required Function(
               {required String value, required String id, String? imageUrl})
           selectCountry,
@@ -149,6 +157,7 @@ class _NewDealShoppingInfoState extends ConsumerState<NewDealShoppingInfo> {
           type: type,
           id: id,
           selectCountry: selectCountry,
+          selectedItem: selectedItem,
         );
       },
     );
@@ -184,6 +193,15 @@ class _NewDealShoppingInfoState extends ConsumerState<NewDealShoppingInfo> {
     );
   }
 
+  void _addToSelectedStates(
+      {required String value, required String id, String? imageUrl}) {
+    ref.read(newDealDataProvider.notifier).addSelectedStates(
+            selectedState: LocationSelection(
+          name: value,
+          id: id,
+        ));
+  }
+
   void _showStatesBottomSheet() {
     final newDealData = ref.watch(newDealDataProvider);
 
@@ -204,7 +222,11 @@ class _NewDealShoppingInfoState extends ConsumerState<NewDealShoppingInfo> {
       ),
       context: context,
       builder: (_) {
-        return const StatesBottomSheet();
+        return StatesBottomSheet(
+          selectedItem: "",
+          selectItem: _addToSelectedStates,
+          countryId: newDealData.shippingToCountryId!,
+        );
       },
     );
   }
@@ -281,6 +303,7 @@ class _NewDealShoppingInfoState extends ConsumerState<NewDealShoppingInfo> {
                 CustomInputSelectionButton(
                   hasSelected: newDealData.shippingFromCountry != null,
                   onTap: () => _showCountryToBottomSheet(
+                      selectedItem: newDealData.shippingFromCountry.toString(),
                       type: DealsDropList.shippingFrom.name,
                       //  id: newDealData.shippingToContinentId,
                       selectCountry: _selectShipFromCountry),
@@ -355,6 +378,9 @@ class _NewDealShoppingInfoState extends ConsumerState<NewDealShoppingInfo> {
                     key: const Key("country"),
                     onTap: () => !showContinentInput
                         ? _showCountryToBottomSheet(
+                            selectedItem: showContinentInput
+                                ? ""
+                                : newDealData.shippingToCountry.toString(),
                             type: showContinentInput
                                 ? DealsDropList.multipleSelection.name
                                 : DealsDropList.shippingTo.name,
@@ -364,6 +390,9 @@ class _NewDealShoppingInfoState extends ConsumerState<NewDealShoppingInfo> {
                                 : _selectShipToCountry,
                           )
                         : _showCountryToUsingContinentIdBottomSheet(
+                            selectedItem: showContinentInput
+                                ? ""
+                                : newDealData.shippingToCountry.toString(),
                             type: showContinentInput
                                 ? DealsDropList.multipleSelection.name
                                 : DealsDropList.shippingTo.name,

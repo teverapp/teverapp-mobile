@@ -123,21 +123,21 @@ class _ChoosePictureTypeDialogState extends State<ChoosePictureTypeDialog> {
               ),
               const SizedBox(height: 30),
               Container(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: Color.fromRGBO(50, 50, 71, 0.1),
-                        offset: Offset(0, 1), // Horizontal: 0px, Vertical: 1px
-                        blurRadius: 3, // Blur radius
-                        spreadRadius: 0, // Spread radius
+                        color: _customColor.customRgba2,
+                        offset: const Offset(0, 1),
+                        blurRadius: 3,
+                        spreadRadius: 0,
                       ),
                       BoxShadow(
-                        color: Color.fromRGBO(12, 26, 75, 0.2),
-                        offset: Offset(0, 0), // Horizontal: 0px, Vertical: 0px
-                        blurRadius: 1, // Blur radius
-                        spreadRadius: 0, // Spread radius
+                        color: _customColor.customRgba3,
+                        offset: const Offset(0, 0),
+                        blurRadius: 1,
+                        spreadRadius: 0,
                       ),
                     ],
                   ),

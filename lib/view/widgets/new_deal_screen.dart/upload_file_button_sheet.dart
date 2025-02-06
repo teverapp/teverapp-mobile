@@ -12,7 +12,12 @@ import 'package:tever/view/widgets/general/common/toast_service.dart';
 
 class UploadFileButtonSheet extends ConsumerStatefulWidget {
   final String title;
-  const UploadFileButtonSheet({super.key, required this.title});
+  final String id;
+  const UploadFileButtonSheet({
+    super.key,
+    required this.title,
+    required this.id,
+  });
 
   @override
   ConsumerState<UploadFileButtonSheet> createState() =>
@@ -35,36 +40,30 @@ class _UploadFileButtonSheetState extends ConsumerState<UploadFileButtonSheet> {
   }
 
   Future<void> _selectDocument() async {
-    if (ModalRoute.of(context)?.isCurrent == true) {
-      Navigator.of(context).pop();
-    }
-
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['pdf', 'docx', 'txt'],
+        allowedExtensions: ['pdf', 'docx'], // Restrict selection to these types
       );
 
       if (result != null) {
         final fileExtension = result.files.first.extension?.toLowerCase();
-
         final fileSize = result.files.first.size;
+        const maxFileSize = 5 * 1024 * 1024; // 5 MB
 
-        const maxFileSize = 5 * 1024 * 1024; //5 mb
-
-        if (fileExtension != 'pdf' &&
-            fileExtension != 'docx' &&
-            fileExtension != 'txt') {
+        // Validate file type
+        if (fileExtension != 'pdf' && fileExtension != 'docx') {
           if (mounted) {
             _showToast(
               context: context,
-              message: "Please upload a file of type PDF, DOCX, or TXT.",
+              message: "Please upload a file of type PDF or DOCX.",
               status: ToastStatus.error.name,
             );
           }
           return;
         }
 
+        // Validate file size
         if (fileSize > maxFileSize) {
           if (mounted) {
             _showToast(
@@ -76,9 +75,11 @@ class _UploadFileButtonSheetState extends ConsumerState<UploadFileButtonSheet> {
           return;
         }
 
+        // Process valid file
         final selectedFile = DocumentFile(
           title: widget.title,
-          name: result.files.single.name,
+          docName: result.files.single.name,
+          id: widget.id,
           doc: File(result.files.single.path!),
         );
 
@@ -90,9 +91,15 @@ class _UploadFileButtonSheetState extends ConsumerState<UploadFileButtonSheet> {
       if (mounted) {
         _showToast(
           context: context,
-          message: "$e Something went wrong. Please try again.",
+          message: "Something went wrong. Please try again.",
           status: ToastStatus.error.name,
         );
+      }
+    } finally {
+      if (mounted) {
+        if (ModalRoute.of(context)?.isCurrent == true) {
+          Navigator.of(context).pop();
+        }
       }
     }
   }
