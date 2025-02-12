@@ -14,6 +14,8 @@ import 'package:tever/view/widgets/new_deal_screen.dart/add_affliate_marketing_c
 import 'package:tever/view/widgets/new_deal_screen.dart/add_button.dart';
 import 'package:tever/view/widgets/new_deal_screen.dart/add_promotion_material_card.dart';
 import 'package:tever/view/widgets/new_deal_screen.dart/promotion_type_buttom_sheet.dart';
+import 'package:tever/view/widgets/new_deal_screen.dart/switch_button_outlined.dart';
+import 'package:tever/view/widgets/wallet_details_card/switch_button.dart';
 
 class NewDealPromotion extends ConsumerStatefulWidget {
   final int selectedIndex;
@@ -77,9 +79,12 @@ class _NewDealPromotionState extends ConsumerState<NewDealPromotion> {
     ref
         .read(newDealDataProvider.notifier)
         .updateNewDeal("showAddAffliateMarketingCard", true);
-    //   setState(() {
-    //     _showAddAffliateMarketingCard = true;
-    //   });
+  }
+
+  void _toggleUsePromotionCodeAsPercentage(bool prevState) {
+    ref
+        .read(newDealDataProvider.notifier)
+        .updateNewDeal("isPromotionValueAPercentage", !prevState);
   }
 
   Future<void> _showDatePicker() async {
@@ -94,12 +99,16 @@ class _NewDealPromotionState extends ConsumerState<NewDealPromotion> {
 
     if (pickedDate != null) {
       final formattedDate = DateFormat('d MMMM, yyyy').format(pickedDate);
+      // final formattedDisplayDate =
+      //     DateFormat('d MMMM, yyyy').format(pickedDate);
+      final formattedIsoDate =
+          DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(pickedDate.toUtc());
 
       _validityDateController.text = formattedDate;
 
       ref
           .read(newDealDataProvider.notifier)
-          .updateNewDeal("dealPromotionValidDate", formattedDate);
+          .updateNewDeal("dealPromotionValidDate", formattedIsoDate);
     }
   }
 
@@ -128,7 +137,14 @@ class _NewDealPromotionState extends ConsumerState<NewDealPromotion> {
 
       _promotionCodeController.text = newDealData.dealPromotionCode ?? "";
 
-      _validityDateController.text = newDealData.dealPromotionValidDate ?? "";
+      if (newDealData.dealPromotionValidDate != null) {
+        DateTime dateTime = DateTime.parse(newDealData.dealPromotionValidDate!);
+
+        _validityDateController.text =
+            DateFormat("d MMMM, yyyy").format(dateTime);
+      } else {
+        _validityDateController.text = "";
+      }
     });
   }
 
@@ -277,7 +293,33 @@ class _NewDealPromotionState extends ConsumerState<NewDealPromotion> {
                         .updateNewDeal("dealPromotionValue", value);
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 11),
+
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Promotion value is a percentage",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: _customColor.custom242424,
+                      ),
+                    ),
+                    SwitchButtonOutlined(
+                        toggleHandler: () =>
+                            _toggleUsePromotionCodeAsPercentage(
+                                newDealData.isPromotionValueAPercentage!),
+                        isOn: newDealData.isPromotionValueAPercentage ?? false),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Divider(
+                  color: _customColor.customE7E7E7,
+                ),
+
+                const SizedBox(height: 8),
                 Text(
                   "Promotion code",
                   style: TextStyle(
@@ -293,7 +335,7 @@ class _NewDealPromotionState extends ConsumerState<NewDealPromotion> {
                     fontSize: 14,
                   ),
                   decoration: InputDecoration(
-                    hintText: "E.g. CLEAN30BG",
+                    hintText: "E.g. 55E6763838",
                     filled: true,
                     fillColor: Colors.white,
                     contentPadding: const EdgeInsets.only(left: 16, bottom: 1),

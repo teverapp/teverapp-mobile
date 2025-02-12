@@ -1,13 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tever/helpers/custom_colors.dart';
 
 class PostedCard extends StatelessWidget {
-  const PostedCard({super.key});
+  final String approvalStatus;
+  final String promotionCode;
+  final String title;
+  final String price;
+  final String slashedPrice;
+  final VoidCallback onTap;
+  const PostedCard({
+    super.key,
+    required this.approvalStatus,
+    required this.promotionCode,
+    required this.title,
+    required this.price,
+    required this.slashedPrice,
+    required this.onTap,
+  });
 
   final CustomColors _customColor = const CustomColors();
 
   @override
   Widget build(BuildContext context) {
+    double formattedPrice = double.tryParse(price) ?? 0.0;
+
+    double formattedSlashedPrice = double.tryParse(slashedPrice) ?? 0.0;
+
     return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -29,7 +48,7 @@ class PostedCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "Approval status",
+                  approvalStatus,
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
                     fontSize: 12,
@@ -43,7 +62,7 @@ class PostedCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Promotion ID",
+                  "Promotion Code",
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontSize: 12,
@@ -51,7 +70,7 @@ class PostedCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "Not yet posted",
+                  promotionCode,
                   style: TextStyle(
                     fontWeight: FontWeight.w300,
                     fontSize: 12,
@@ -77,7 +96,7 @@ class PostedCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              "The Grand Event Hall",
+              title,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
@@ -90,7 +109,8 @@ class PostedCard extends StatelessWidget {
                 text: TextSpan(
                     children: [
                       TextSpan(
-                        text: "₦7,000  ",
+                        text:
+                            "₦${NumberFormat.decimalPattern().format(formattedPrice)}  ",
                         style: TextStyle(
                           fontSize: 16,
                           color: _customColor.custom242424,
@@ -98,7 +118,8 @@ class PostedCard extends StatelessWidget {
                         ),
                       ),
                       TextSpan(
-                        text: "₦10,000",
+                        text:
+                            "₦${NumberFormat.decimalPattern().format(formattedSlashedPrice)}",
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
                           color: _customColor.custom888888,
@@ -141,7 +162,7 @@ class PostedCard extends StatelessWidget {
               height: 40,
               width: double.infinity,
               child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: onTap,
                   style: OutlinedButton.styleFrom(
                     side:
                         BorderSide(color: _customColor.custom242424, width: 1),

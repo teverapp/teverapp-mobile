@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tever/controller/business_profile.dart';
 import 'package:tever/controller/new_deal_controller.dart';
+import 'package:tever/controller/user_controller.dart';
 import 'package:tever/helpers/custom_colors.dart';
 import 'package:tever/view/widgets/general/common/custom_input_selection_button.dart';
 import 'package:tever/view/widgets/new_deal_screen.dart/add_a_business_button.dart';
@@ -50,6 +51,10 @@ class _SetTermsState extends ConsumerState<SetTerms> {
     final newDealsData = ref.watch(newDealDataProvider);
 
     final businessProfileDealsData = ref.watch(businessProfileProvider);
+
+    final userData = ref.watch(userDataProvider);
+
+    final hasUserCreatedABusiness = userData.hasCreatedABusiness ?? false;
 
     return Padding(
         padding: const EdgeInsets.only(right: 16, left: 16),
@@ -158,172 +163,178 @@ class _SetTermsState extends ConsumerState<SetTerms> {
                   ),
                 ),
               ),
-
-              // Contact information
-              SizedBox(
-                width: double.infinity,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedIndex = _selectedIndex == 1 ? -1 : 1;
-                          });
-                        },
-                        child: Container(
-                          height: 38,
-                          color: Colors.transparent,
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Store information (Required)",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                    color: _customColor.custom242424,
-                                  ),
-                                ),
-                                AnimatedRotation(
-                                  turns: _selectedIndex == 1 ? 0.5 : 1,
-                                  duration: const Duration(milliseconds: 300),
-                                  child: Image.asset(
-                                    "assets/icon/drop_down.png",
-                                    height: 20,
-                                    width: 20,
-                                  ),
-                                ),
-                              ]),
-                        ),
-                      ),
-                      if (_selectedIndex == 1) ...[
-                        const SizedBox(height: 10),
-                        Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (!newDealsData.hasCreatedABussinessProfile)
-                                const AddABusinessButton(),
-                              if (newDealsData.hasCreatedABussinessProfile) ...[
-                                CheckAndConfirmCard(
-                                  label: "Business Logo",
-                                  image: businessProfileDealsData.businessLogo,
-                                ),
-                                CheckAndConfirmCard(
-                                  label: "Business name",
-                                  value: businessProfileDealsData.businessName,
-                                ),
-                                CheckAndConfirmCard(
-                                  label: "Brand/ trade name",
-                                  value: businessProfileDealsData.brandName,
-                                ),
-                                CheckAndConfirmCard(
-                                  label: "Business type",
-                                  value: businessProfileDealsData.businessType
-                                      .toString(),
-                                ),
-                                CheckAndConfirmCard(
-                                  label: "Industry",
-                                  value: businessProfileDealsData.industry
-                                      .toString(),
-                                ),
-                                CheckAndConfirmCard(
-                                  label: "About business",
-                                  value: businessProfileDealsData.aboutBusiness
-                                      .toString(),
-                                ),
-                                CheckAndConfirmCard(
-                                  label: "Business email address",
-                                  value:
-                                      businessProfileDealsData.email.toString(),
-                                ),
-                                CheckAndConfirmCard(
-                                  label: "Phone number",
-                                  value: businessProfileDealsData.phoneNumber
-                                      .toString(),
-                                ),
-                                CheckAndConfirmCard(
-                                  label: "Address",
-                                  value: businessProfileDealsData
-                                      .address!.locationName
-                                      .toString(),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16),
-                                  child: Container(
-                                    height: 37,
-                                    margin: const EdgeInsets.only(bottom: 10),
-                                    decoration: BoxDecoration(
-                                        border: Border(
-                                            bottom: BorderSide(
-                                      width: 1,
-                                      color: _customColor.customEFEFEF,
-                                    ))),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          "Social media",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 12,
-                                              color: theme.colorScheme.primary),
-                                        ),
-                                        const SizedBox(width: 20),
-                                        Row(
-                                          children: [
-                                            Image.asset(
-                                              "assets/icon/${businessProfileDealsData.tiktokUrl.imageUrl}",
-                                              height: 20,
-                                              width: 20,
-                                            ),
-                                            const SizedBox(width: 16),
-                                            Image.asset(
-                                              "assets/icon/${businessProfileDealsData.twitterUrl.imageUrl}",
-                                              height: 20,
-                                              width: 20,
-                                            ),
-                                            const SizedBox(width: 16),
-                                            Image.asset(
-                                              "assets/icon/${businessProfileDealsData.facebookUrl.imageUrl}",
-                                              height: 20,
-                                              width: 20,
-                                            ),
-                                            const SizedBox(width: 16),
-                                            Image.asset(
-                                              "assets/icon/${businessProfileDealsData.instagramUrl.imageUrl}",
-                                              height: 20,
-                                              width: 20,
-                                            ),
-                                            const SizedBox(width: 16),
-                                            Image.asset(
-                                              "assets/icon/${businessProfileDealsData.threadsUrl.imageUrl}",
-                                              height: 20,
-                                              width: 20,
-                                            ),
-                                          ],
-                                        )
-                                      ],
+              if (!hasUserCreatedABusiness)
+                // Contact information
+                SizedBox(
+                  width: double.infinity,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedIndex = _selectedIndex == 1 ? -1 : 1;
+                            });
+                          },
+                          child: Container(
+                            height: 38,
+                            color: Colors.transparent,
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Store information (Required)",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: _customColor.custom242424,
                                     ),
                                   ),
-                                )
-                              ]
-                            ])
+                                  AnimatedRotation(
+                                    turns: _selectedIndex == 1 ? 0.5 : 1,
+                                    duration: const Duration(milliseconds: 300),
+                                    child: Image.asset(
+                                      "assets/icon/drop_down.png",
+                                      height: 20,
+                                      width: 20,
+                                    ),
+                                  ),
+                                ]),
+                          ),
+                        ),
+                        if (_selectedIndex == 1) ...[
+                          const SizedBox(height: 10),
+                          Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (!newDealsData.hasCreatedABussinessProfile)
+                                  const AddABusinessButton(),
+                                if (newDealsData
+                                    .hasCreatedABussinessProfile) ...[
+                                  CheckAndConfirmCard(
+                                    label: "Business Logo",
+                                    image:
+                                        businessProfileDealsData.businessLogo,
+                                  ),
+                                  CheckAndConfirmCard(
+                                    label: "Business name",
+                                    value:
+                                        businessProfileDealsData.businessName,
+                                  ),
+                                  CheckAndConfirmCard(
+                                    label: "Brand/ trade name",
+                                    value: businessProfileDealsData.brandName,
+                                  ),
+                                  CheckAndConfirmCard(
+                                    label: "Business type",
+                                    value: businessProfileDealsData.businessType
+                                        .toString(),
+                                  ),
+                                  CheckAndConfirmCard(
+                                    label: "Industry",
+                                    value: businessProfileDealsData.industry
+                                        .toString(),
+                                  ),
+                                  CheckAndConfirmCard(
+                                    label: "About business",
+                                    value: businessProfileDealsData
+                                        .aboutBusiness
+                                        .toString(),
+                                  ),
+                                  CheckAndConfirmCard(
+                                    label: "Business email address",
+                                    value: businessProfileDealsData.email
+                                        .toString(),
+                                  ),
+                                  CheckAndConfirmCard(
+                                    label: "Phone number",
+                                    value: businessProfileDealsData.phoneNumber
+                                        .toString(),
+                                  ),
+                                  CheckAndConfirmCard(
+                                    label: "Address",
+                                    value: businessProfileDealsData
+                                        .address!.locationName
+                                        .toString(),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16),
+                                    child: Container(
+                                      height: 37,
+                                      margin: const EdgeInsets.only(bottom: 10),
+                                      decoration: BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                        width: 1,
+                                        color: _customColor.customEFEFEF,
+                                      ))),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "Social media",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 12,
+                                                color:
+                                                    theme.colorScheme.primary),
+                                          ),
+                                          const SizedBox(width: 20),
+                                          Row(
+                                            children: [
+                                              Image.asset(
+                                                "assets/icon/${businessProfileDealsData.tiktokUrl.imageUrl}",
+                                                height: 20,
+                                                width: 20,
+                                              ),
+                                              const SizedBox(width: 16),
+                                              Image.asset(
+                                                "assets/icon/${businessProfileDealsData.twitterUrl.imageUrl}",
+                                                height: 20,
+                                                width: 20,
+                                              ),
+                                              const SizedBox(width: 16),
+                                              Image.asset(
+                                                "assets/icon/${businessProfileDealsData.facebookUrl.imageUrl}",
+                                                height: 20,
+                                                width: 20,
+                                              ),
+                                              const SizedBox(width: 16),
+                                              Image.asset(
+                                                "assets/icon/${businessProfileDealsData.instagramUrl.imageUrl}",
+                                                height: 20,
+                                                width: 20,
+                                              ),
+                                              const SizedBox(width: 16),
+                                              Image.asset(
+                                                "assets/icon/${businessProfileDealsData.threadsUrl.imageUrl}",
+                                                height: 20,
+                                                width: 20,
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                ]
+                              ])
+                        ],
+                        Divider(
+                          color: _customColor.customEFEFEF,
+                          thickness: 1,
+                        )
                       ],
-                      Divider(
-                        color: _customColor.customEFEFEF,
-                        thickness: 1,
-                      )
-                    ],
+                    ),
                   ),
                 ),
-              ),
             ]),
             const SizedBox(height: 183),
             Row(

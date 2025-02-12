@@ -21,10 +21,12 @@ import 'package:tever/view/tabs/orders_tab.dart';
 
 class TabsScreen extends ConsumerStatefulWidget {
   final int? selectedPageIndex;
+  final bool refetchUserData;
   final bool justCreatedBusnessProfile;
   const TabsScreen(
       {super.key,
       this.selectedPageIndex,
+      this.refetchUserData = false,
       this.justCreatedBusnessProfile = false});
 
   @override
@@ -68,13 +70,14 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
   }
 
   void _fetchInitialData() async {
-    final userData = ref.read(userDataProvider);
+    _allUserDataFuture = _obtainUserDataFuture();
+    // final userData = ref.read(userDataProvider);
 
-    if (userData.firstName != null) {
-      _allUserDataFuture = Future.value();
-    } else {
-      _allUserDataFuture = _obtainUserDataFuture();
-    }
+    // if (userData.firstName != null) {
+    //   _allUserDataFuture = Future.value();
+    // } else {
+    //   _allUserDataFuture = _obtainUserDataFuture();
+    // }
   }
 
   void _navigateToSignInScreen() {
@@ -146,7 +149,7 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (!_fetchedInitialData) {
+    if (!_fetchedInitialData || widget.refetchUserData) {
       _fetchInitialData();
       _fetchedInitialData = true;
     }

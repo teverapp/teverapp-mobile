@@ -14,7 +14,7 @@ class PostedSpaces extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PostedCard(),
+          // PostedCard(),
         ],
       ),
     );

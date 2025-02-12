@@ -11,8 +11,12 @@ extension BusinessProfileUpdate on BusinessProfile {
         return copyWith(address: value);
       case "businessType":
         return copyWith(businessType: value);
+      case "businessTypeId":
+        return copyWith(businessTypeId: value);
       case "industry":
         return copyWith(industry: value);
+      case "industryId":
+        return copyWith(industryId: value);
       case "tiktokUrl":
         return copyWith(tiktokUrl: value);
       case "twitterUrl":

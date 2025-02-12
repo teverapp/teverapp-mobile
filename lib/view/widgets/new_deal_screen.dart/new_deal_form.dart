@@ -9,6 +9,7 @@ import 'package:tever/view/widgets/new_deal_screen.dart/new_deal_details.dart';
 import 'package:tever/view/widgets/new_deal_screen.dart/new_deal_promotion.dart';
 import 'package:tever/view/widgets/new_deal_screen.dart/new_deal_shopping_info.dart';
 import 'package:tever/view/widgets/new_deal_screen.dart/new_deal_type.dart';
+import 'package:tever/view/widgets/new_deal_screen.dart/save_as_draft_button.dart';
 
 class NewDealForm extends ConsumerStatefulWidget {
   final Function next;
@@ -62,6 +63,7 @@ class _NewDealFormState extends ConsumerState<NewDealForm> {
     final typeItemisValid = newDealInfo.title!.isNotEmpty &&
         newDealInfo.categoryId != null &&
         newDealInfo.subCategoryId != null &&
+        newDealInfo.subCategoryId != "" &&
         newDealInfo.description!.isNotEmpty &&
         newDealInfo.dealPromotionType != null &&
         newDealInfo.dealPromotionTypeId != null &&
@@ -96,7 +98,9 @@ class _NewDealFormState extends ConsumerState<NewDealForm> {
         newDealInfo.dealDetailsImages!.any((value) => value != null) &&
         (newDealInfo.contactForQuote || newDealInfo.price!.isNotEmpty) &&
         newDealInfo.noOfRoomsForCleaning != null &&
+        newDealInfo.noOfRoomsForCleaning != "" &&
         newDealInfo.duration != null &&
+        newDealInfo.duration != "" &&
         newDealInfo.dealPromotionType != null &&
         newDealInfo.dealPromotionValue!.isNotEmpty &&
         newDealInfo.dealPromotionCode!.isNotEmpty &&
@@ -160,32 +164,7 @@ class _NewDealFormState extends ConsumerState<NewDealForm> {
           const SizedBox(height: 40),
           Row(
             children: [
-              Expanded(
-                child: SizedBox(
-                  height: 48,
-                  child: OutlinedButton(
-                    onPressed: () {},
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      side: BorderSide(
-                        color: theme.colorScheme.error,
-                        width: 1,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                    ),
-                    child: Text(
-                      "Save as draft",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: theme.colorScheme.error,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              const SaveAsDraftButton(),
               const SizedBox(width: 20),
               Expanded(
                 child: SizedBox(

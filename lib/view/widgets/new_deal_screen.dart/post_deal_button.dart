@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tever/controller/new_deal_controller.dart';
+import 'package:tever/controller/user_controller.dart';
 import 'package:tever/extensions/toast_status.dart';
 import 'package:tever/helpers/custom_colors.dart';
 import 'package:tever/model/custom_http_exception.dart';
@@ -51,7 +52,11 @@ class _PostDealButtonState extends ConsumerState<PostDealButton> {
           .read(newDealDataProvider.notifier)
           .uploadDeal(saveToDraft: false);
 
-      print("herre");
+      _showToast(
+          message: "Deal created successfully",
+          status: ToastStatus.success.name);
+
+      widget.next(3);
       // widget.next(3);
     } on CustomHttpException catch (error) {
       _showToast(message: error.toString(), status: ToastStatus.error.name);
@@ -81,6 +86,10 @@ class _PostDealButtonState extends ConsumerState<PostDealButton> {
 
     final newDealsData = ref.watch(newDealDataProvider);
 
+    final userData = ref.watch(userDataProvider);
+
+    final bool hasCreatedABusiness = userData.hasCreatedABusiness ?? false;
+
     bool hasValidTermsAndPolicies =
         newDealsData.selectedTermsAndPolicy.isNotEmpty &&
             newDealsData.selectedTermsAndPolicy.any((document) =>
@@ -89,7 +98,9 @@ class _PostDealButtonState extends ConsumerState<PostDealButton> {
                     (document.content != null && document.content != "")));
 
     final isValid =
-        newDealsData.hasCreatedABussinessProfile && hasValidTermsAndPolicies;
+        (newDealsData.hasCreatedABussinessProfile || hasCreatedABusiness) &&
+            hasValidTermsAndPolicies;
+
     return Expanded(
       child: SizedBox(
         height: 48,

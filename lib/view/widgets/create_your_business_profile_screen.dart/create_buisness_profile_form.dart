@@ -4,15 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tever/controller/business_profile.dart';
 import 'package:tever/controller/new_deal_controller.dart';
+import 'package:tever/extensions/toast_status.dart';
 import 'package:tever/helpers/custom_colors.dart';
 import 'package:tever/model/common.dart';
 import 'package:tever/model/coordinate.dart';
 import 'package:tever/model/country.dart';
 import 'package:tever/model/business_profile.dart';
+import 'package:tever/model/custom_http_exception.dart';
 import 'package:tever/view/screens/new_deal_screen.dart';
+import 'package:tever/view/screens/sign_in_screen.dart';
 import 'package:tever/view/widgets/create_your_business_profile_screen.dart/business_type_bottom_sheet.dart';
 import 'package:tever/view/widgets/create_your_business_profile_screen.dart/save_business_profile_details_button.dart';
 import 'package:tever/view/widgets/general/common/custom_input_selection_button.dart';
+import 'package:tever/view/widgets/general/common/toast_service.dart';
 import 'package:tever/view/widgets/new_event_screen/address_list_bottom_sheet.dart';
 import 'package:tever/view/widgets/new_event_screen/choose_picture_type_dialog.dart';
 import 'package:tever/view/widgets/sign_up_screen/email_input.dart';
@@ -89,6 +93,10 @@ class _CreateBuisnessProfileFormState
     ref
         .read(businessProfileProvider.notifier)
         .updateBusinessProfile("businessType", value);
+
+    ref
+        .read(businessProfileProvider.notifier)
+        .updateBusinessProfile("businessTypeId", id);
   }
 
   void _selectIndustry(
@@ -96,6 +104,10 @@ class _CreateBuisnessProfileFormState
     ref
         .read(businessProfileProvider.notifier)
         .updateBusinessProfile("industry", value);
+
+    ref
+        .read(businessProfileProvider.notifier)
+        .updateBusinessProfile("industryId", id);
   }
 
   void _selectAddress({required Coordinate location}) {
@@ -152,24 +164,6 @@ class _CreateBuisnessProfileFormState
     );
   }
 
-  void _navigate(Widget screen) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => screen,
-      ),
-    );
-  }
-
-  void _submit() async {
-    if (widget.isCreatedFromNewDeals) {
-      ref
-          .read(newDealDataProvider.notifier)
-          .updateNewDeal("hasCreatedABussinessProfile", true);
-
-      _navigate(const NewDealScreen(selectedSection: 2));
-    }
-  }
-
   void _selectImageTypeDialog() {
     showModalBottomSheet(
       isScrollControlled: true,
@@ -223,8 +217,8 @@ class _CreateBuisnessProfileFormState
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
+
     _businessNameController.dispose();
 
     _brandNameController.dispose();
@@ -902,7 +896,7 @@ class _CreateBuisnessProfileFormState
         ),
         const SizedBox(height: 40),
         SaveBusinessProfileDetailsButton(
-          proceed: _submit,
+          isCreatedFromNewDeals: widget.isCreatedFromNewDeals,
         ),
         const SizedBox(height: 40),
       ],

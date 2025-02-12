@@ -138,10 +138,12 @@ class _NewDealsSubcategoryBottomSheetState
               useNullAsAddedItemId: true,
               showSearchField: true,
               addMoreItemsToList: _addMoreItemsToSUbCat,
-              hasSelected: newDealData.subCategoryId != null,
+              hasSelected: newDealData.subCategoryId != null &&
+                  newDealData.subCategoryId != "",
               dropdownItems: appResourceData.fetchedDealDetailsSubCategory,
               selectItem: _selectSubCategory,
-              selectedItem: newDealData.subCategoryId != null
+              selectedItem: newDealData.subCategoryId != null &&
+                      newDealData.subCategoryId != ""
                   ? newDealData.subCategory.toString()
                   : "Select sub category",
               errorMessage: _dealSubCategoryListErrorMessage,

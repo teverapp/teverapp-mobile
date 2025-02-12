@@ -1,13 +1,14 @@
 import "dart:convert";
 import "dart:io";
 
-import "package:flutter/material.dart";
-import "package:http/http.dart" as http;
+import 'package:dio/dio.dart';
 import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:http/http.dart" as http;
+
 import "package:tever/controller/access_token_controller.dart";
 import "package:tever/controller/app_resource_controller.dart";
 import "package:tever/controller/business_profile.dart";
-import "package:tever/extensions/deals_tab.dart";
+import "package:tever/controller/user_controller.dart";
 import "package:tever/extensions/new_deal_update.dart";
 import "package:tever/helpers/general.dart";
 import "package:tever/model/common.dart";
@@ -74,19 +75,13 @@ class NewDealControllerNotifier extends StateNotifier<NewDeal> {
   }
 
   void removeFromSelectedCountry({required int index}) {
-    // Safely create a copy of selectedCountries
     final updatedCountries = state.selectedCountries;
 
-    // Ensure the index is within bounds
     if (index >= 0 && index < updatedCountries!.length) {
       updatedCountries.removeAt(index);
     }
 
-    // Update the correct field in the state
     state = state.copyWith(selectedCountries: updatedCountries);
-
-    // Debugging output
-    print("Updated selectedCountries: ${state.selectedCountries}");
   }
 
   void addSelectedStates({required LocationSelection selectedState}) {
@@ -95,12 +90,15 @@ class NewDealControllerNotifier extends StateNotifier<NewDeal> {
     state = state.copyWith(selectedStates: updatedStates);
   }
 
+  void resetSelectedSubCategory() {
+    state = state.copyWith(subCategory: "", subCategoryId: "");
+  }
+
   void resetSelectedStatedAndCountry() {
     ref.read(appResourceProvider.notifier).resetFetchedStates();
 
     ref.read(appResourceProvider.notifier).resetFetchedCountries();
 
-    print("reset callled");
     state = state.copyWith(
         selectedCountries: [],
         selectedStates: [],
@@ -125,21 +123,15 @@ class NewDealControllerNotifier extends StateNotifier<NewDeal> {
   }
 
   void removeFromSelectedState({required int index}) {
-    // Safely copy selectedStates
     final updatedStates = state.selectedStates;
 
     if (index < 0 || index >= updatedStates!.length) {
-      print("Index out of bounds: $index");
       return;
     }
 
-    // Remove item
-    print("Removing index $index from selectedStates");
     updatedStates.removeAt(index);
 
-    // Update state
     state = state.copyWith(selectedStates: updatedStates);
-    print("Updated selectedStates: ${state.selectedStates}");
   }
 
   void addVarient({required NewDeailsDetailsVarient varient}) {
@@ -190,19 +182,16 @@ class NewDealControllerNotifier extends StateNotifier<NewDeal> {
     );
 
     if (existingIndex != -1) {
-      print("updateTermsAndPolicy yes");
       termsAndPolicy.title = updatedSelectedTermsAndPolicy[existingIndex].title;
 
       updatedSelectedTermsAndPolicy[existingIndex] = termsAndPolicy;
     } else {
-      print("updateTermsAndPolicy no");
       updatedSelectedTermsAndPolicy.add(termsAndPolicy);
     }
 
     state =
         state.copyWith(selectedTermsAndPolicy: updatedSelectedTermsAndPolicy);
-    print(
-        "updatedSelectedTermsAndPolicy Length ${updatedSelectedTermsAndPolicy.length}");
+
     return;
   }
 
@@ -220,438 +209,253 @@ class NewDealControllerNotifier extends StateNotifier<NewDeal> {
 
     state =
         state.copyWith(selectedTermsAndPolicy: updatedSelectedTermsAndPolicy);
-
-    print(
-        "updatedSelectedTermsAndPolicy ${updatedSelectedTermsAndPolicy.length}");
   }
 
   void updateField(String key, dynamic value) {
     state = state.update(key, value);
   }
 
-  Future<void> uploadDeal({required bool saveToDraft}) async {
-    final url = Uri.parse('$baseUrl/deals/create-edit');
-    final creatingBusinessProfile = ref.watch(businessProfileProvider);
-    final token = ref.watch(accessTokenProvider);
+  void printFormData(FormData formData) async {
+    Map<String, dynamic> requestData = {};
 
-    // Create the multipart request
-    final request = http.MultipartRequest('POST', url);
-    request.headers['Authorization'] = 'Bearer $token';
-
-    // --- Add Text Fields ---
-    request.fields['action'] = "c";
-    request.fields['dealTypeId'] = state.type!.id.toString();
-    request.fields['title'] = state.title.toString();
-    request.fields['categoryId'] = state.categoryId.toString();
-    request.fields['subCategoryId'] =
-        (state.subCategoryId ?? state.subCategory).toString();
-    request.fields['description'] = state.description.toString();
-    request.fields['isDraft'] = saveToDraft ? "true" : "false";
-    request.fields['dealLong'] =
-        creatingBusinessProfile.address!.locationLongitude.toString();
-    request.fields['dealLat'] =
-        creatingBusinessProfile.address!.locationLatiude.toString();
-    request.fields['shippingToRegion'] = state.shippingToRegion.toString();
-
-    if (!state.contactForQuote) {
-      request.fields['price'] = state.price!;
+    for (var field in formData.fields) {
+      requestData[field.key] = field.value;
     }
 
-    // --- Deal Details (Variants) ---
-    if (state.varient.isNotEmpty) {
-      List<Map<String, dynamic>> variants = [];
-      for (int variantIndex = 0;
-          variantIndex < state.varient.length;
-          variantIndex++) {
-        final variant = state.varient[variantIndex];
-        Map<String, dynamic> variantData = {
+    for (var file in formData.files) {
+      requestData[file.key] = "Uploaded file: ${file.value.filename}";
+    }
+
+    String formattedJson = JsonEncoder.withIndent('  ').convert(requestData);
+    print("Uploading Deal with the following data:\n$formattedJson");
+  }
+
+  Future<void> uploadDeal({required bool saveToDraft}) async {
+    final token = ref.watch(accessTokenProvider);
+
+    const apiUrl = "$baseUrl/deals/create-edit";
+
+    final creatingBusinessProfile = ref.watch(businessProfileProvider);
+
+    final userData = ref.watch(userDataProvider);
+
+    final hasUserCreatedABusiness = userData.hasCreatedABusiness ?? false;
+
+    try {
+      final nonNullDealImages =
+          state.dealDetailsImages?.where((file) => file != null).toList() ?? [];
+
+      final dealImageFiles = await Future.wait(nonNullDealImages.map(
+        (image) async => await MultipartFile.fromFile(image!.path),
+      ));
+
+      // Convert variant images to MultipartFile
+      final dealVariants = await Future.wait(state.varient.map((variant) async {
+        final nonNullVariantImages =
+            variant.images?.where((file) => file != null).toList() ?? [];
+
+        final variantImageFiles = await Future.wait(nonNullVariantImages.map(
+          (image) async => await MultipartFile.fromFile(image!.path),
+        ));
+
+        return {
           "color": variant.color,
           "size": variant.size,
           "dimension": variant.dimension,
           "material": variant.material,
           "weight": variant.weight,
+          "variantImages": variantImageFiles,
         };
+      }));
 
-        // Process and attach each variant image as a file
-        List<String> variantImageFieldNames = [];
-        if (variant.images != null) {
-          for (int imageIndex = 0;
-              imageIndex < variant.images!.length;
-              imageIndex++) {
-            final image = variant.images![imageIndex];
-            if (image != null && image.existsSync()) {
-              final stream = http.ByteStream(image.openRead());
-              final length = await image.length();
-              // Create a unique field name (e.g., variantImages_0_1)
-              final fieldName = 'variantImages_${variantIndex}_$imageIndex';
-              final multipartFile = http.MultipartFile(
-                fieldName,
-                stream,
-                length,
-                filename: image.path.split('/').last,
-              );
-              request.files.add(multipartFile);
-              variantImageFieldNames.add(fieldName);
-            }
-          }
-        }
-        if (variantImageFieldNames.isNotEmpty) {
-          variantData["variantImages"] = variantImageFieldNames;
-        }
-        variants.add(variantData);
-      }
-      request.fields['dealDetails'] = jsonEncode(variants);
-    }
-
-    // --- Shipping Details ---
-    request.fields['dealShippingDetails'] = jsonEncode({
-      "shippingFromCountryIds": [
-        if (state.shippingFromCountryId != null) state.shippingFromCountryId
-      ],
-      "shippingType": state.shippingToRegion,
-      "shippingToContinentIds": [
-        if (state.shippingToContinentId != null) state.shippingToContinentId
-      ],
-      "dealShippingToCountryIds": [
-        if (state.shippingToContinentId != null) state.shippingToContinentId,
-        ...state.selectedStates?.map((e) => e.id).toList() ?? []
-      ],
-      "shippingToStates": [
-        if (state.shippingToCountryId != null) state.shippingToCountryId,
-        ...state.selectedCountries?.map((e) => e.id).toList() ?? []
-      ],
-      if (state.showShippingRateCard)
-        "rate": {
-          "courierId": state.shippingRateCourierservice!.id,
-          "rate":
-              state.shippingRateCourierservice!.courierShippingRate as double,
-        }
-    });
-
-    // --- Deal Promotion ---
-    final promotionData = {
-      "promotionTypeId": state.dealPromotionTypeId,
-      "promotionCode": state.dealPromotionCode,
-      "promotionValue": state.dealPromotionValue,
-      "expiryDate": state.dealPromotionValidDate,
-      // If you want to send the promotional material as a file, it will be added separately.
-      "requireCheckoutInput": state.requiredCustomerToInputCodeDuringCheckOut,
-      // Add business profile details:
-    };
-    request.fields['dealPromotion'] = jsonEncode(promotionData);
-
-    // --- Deal Contact ---
-    final dealContact = {
-      "brandName": creatingBusinessProfile.brandName,
-      "about": creatingBusinessProfile.aboutBusiness,
-      "contactEmail": creatingBusinessProfile.email,
-      "address": creatingBusinessProfile.address!.locationName,
-      "longtude": creatingBusinessProfile.address!.locationLongitude,
-      "latutude": creatingBusinessProfile.address!.locationLatiude,
-      "contactPhone": creatingBusinessProfile.phoneNumber,
-      "countryCode":
-          creatingBusinessProfile.selectedPhoneNumberCountryDetails!.phoneCode,
-    };
-    request.fields['dealContact'] = jsonEncode(dealContact);
-
-    // --- Deal Terms & Conditions (Metadata) ---
-    if (state.selectedTermsAndPolicy.isNotEmpty) {
-      final termsAndConditions = state.selectedTermsAndPolicy.map((doc) {
+      // Convert Terms and Conditions files
+      final dealTnC =
+          await Future.wait(state.selectedTermsAndPolicy.map((doc) async {
         return {
           "typeId": doc.id,
           "rawContent": doc.content,
-          "rawContentFile":
-              doc.doc != null ? doc.doc!.path.split('/').last : null,
+          "rawContentFile": doc.doc != null
+              ? await MultipartFile.fromFile(doc.doc!.path)
+              : null,
         };
-      }).toList();
-      request.fields['dealTnC'] = jsonEncode(termsAndConditions);
-    }
+      }));
 
-    // --- Deal Images (Actual Files) ---
-    if (state.dealDetailsImages != null) {
-      final nonNullImages =
-          state.dealDetailsImages!.where((file) => file != null).toList();
-      for (int i = 0; i < nonNullImages.length; i++) {
-        final file = nonNullImages[i]!;
-        if (file.existsSync()) {
-          final stream = http.ByteStream(file.openRead());
-          final length = await file.length();
-          final multipartFile = http.MultipartFile(
-            'dealImages[$i]',
-            stream,
-            length,
-            filename: file.path.split('/').last,
-          );
-          request.files.add(multipartFile);
-        }
-      }
-    }
+      FormData formData = FormData.fromMap({
+        "action": "c",
+        'dealTypeId': state.type!.id.toString(),
+        'title': state.title.toString(),
+        'categoryId': state.categoryId.toString(),
+        'subCategoryId': (state.subCategoryId ?? state.subCategory).toString(),
+        'description': state.description.toString(),
+        'isDraft': saveToDraft ? "true" : "false",
+        if (!hasUserCreatedABusiness)
+          'dealLong':
+              creatingBusinessProfile.address?.locationLongitude?.toString(),
+        if (!hasUserCreatedABusiness)
+          'dealLat':
+              creatingBusinessProfile.address?.locationLatiude?.toString(),
+        'shippingToRegion': state.shippingToRegion.toString(),
+        if (!state.contactForQuote) 'price': state.price?.toString(),
 
-    // --- Promotional Material Image (Actual File) ---
-    if (state.dealPromotionMaterialImage != null &&
-        state.dealPromotionMaterialImage!.existsSync()) {
-      final file = state.dealPromotionMaterialImage!;
-      final stream = http.ByteStream(file.openRead());
-      final length = await file.length();
-      final multipartFile = http.MultipartFile(
-        'promotionalMaterial',
-        stream,
-        length,
-        filename: file.path.split('/').last,
+        // Deal Details
+        'dealDetails': dealVariants,
+
+        // Shipping Details
+        'dealShippingDetails': {
+          "shippingFromCountryIds": [
+            if (state.shippingFromCountryId != null) state.shippingFromCountryId
+          ],
+          "shippingType": state.shippingToRegion,
+          "shippingToContinentIds": [
+            if (state.shippingToContinentId != null) state.shippingToContinentId
+          ],
+          "dealShippingToCountryIds": [
+            if (state.shippingToCountryId != null) state.shippingToCountryId,
+            ...?state.selectedStates?.map((e) => e.id)
+          ],
+          "shippingToStates": [
+            if (state.shippingToCountryId != null) state.shippingToCountryId,
+            ...?state.selectedCountries?.map((e) => e.id)
+          ],
+          if (state.showShippingRateCard)
+            "rate": {
+              "courierId": state.shippingRateCourierservice?.id,
+              "rate":
+                  state.shippingRateCourierservice?.courierShippingRate ?? 0.0,
+            }
+        },
+
+        // Promotion
+        'dealPromotion': {
+          "promotionTypeId": state.dealPromotionTypeId,
+          "promotionCode": state.dealPromotionCode,
+          "promotionValue": state.dealPromotionValue,
+          "expiryDate": state.dealPromotionValidDate,
+          "requireCheckoutInput":
+              state.requiredCustomerToInputCodeDuringCheckOut,
+          "hasPromotionalMaterial":
+              state.dealPromotionMaterialImage == null ? "false" : "true",
+          "isPercentage": state.isPromotionValueAPercentage,
+          if (state.dealPromotionMaterialImage != null)
+            'promotionalMaterial': await MultipartFile.fromFile(
+                state.dealPromotionMaterialImage!.path),
+        },
+
+        // Contact Details
+        if (!hasUserCreatedABusiness)
+          'dealContact': {
+            "brandName": creatingBusinessProfile.brandName,
+            "about": creatingBusinessProfile.aboutBusiness,
+            "contactEmail": creatingBusinessProfile.email,
+            "address": creatingBusinessProfile.address?.locationName,
+            "longtude": creatingBusinessProfile.address?.locationLongitude,
+            "latutude": creatingBusinessProfile.address?.locationLatiude,
+            "contactPhone": creatingBusinessProfile.phoneNumber,
+            "countryCode": creatingBusinessProfile
+                .selectedPhoneNumberCountryDetails?.phoneCode,
+          },
+
+        // Terms & Conditions
+        'dealTnC': dealTnC,
+
+        // Deal Images
+        "dealImages": dealImageFiles,
+
+        // Promotional Material
+      });
+
+      // Print out the data being sent before making the request
+      formData.fields.forEach((field) {
+        print("${field.key}: ${field.value}");
+      });
+
+      formData.files.forEach((file) {
+        print("${file.key}: ${file.value.filename}");
+      });
+
+      printFormData(formData);
+
+      Dio dio = Dio();
+      Response response = await dio.post(
+        apiUrl,
+        data: formData,
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+            "Content-Type": "multipart/form-data",
+          },
+        ),
       );
-      request.files.add(multipartFile);
-    }
 
-    // --- Deal TnC Files (Actual Files) ---
-    // Use the same field name "dealTnC" so that it matches the metadata.
-    for (final doc in state.selectedTermsAndPolicy) {
-      if (doc.doc != null && doc.doc!.existsSync()) {
-        final file = doc.doc!;
-        final stream = http.ByteStream(file.openRead());
-        final length = await file.length();
-        final multipartFile = http.MultipartFile(
-          'dealTnC',
-          stream,
-          length,
-          filename: file.path.split('/').last,
-        );
-        request.files.add(multipartFile);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final createdId = response.data["data"]["id"];
+
+        state = state.copyWith(id: createdId);
+
+        print("Deal uploaded successfully! ID: $createdId");
+        return;
       }
-    }
 
-    // --- Debugging: Print Form Fields and Attached File Names ---
-    print('Form fields: ${request.fields}');
-    print('Attached files: ${request.files.map((f) => f.filename).toList()}');
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        await ref.read(accessTokenProvider.notifier).deleteToken();
 
-    return;
-    try {
-      final response = await request.send();
-      final responseData = await response.stream.bytesToString();
-      if (responseData.isNotEmpty) {
-        final decodedResponse = jsonDecode(responseData);
-        print('Response data: $decodedResponse');
-        if (response.statusCode == 200) {
-          print('Upload successful: $decodedResponse');
-        } else {
-          print('Failed to upload. Status code: ${response.statusCode}');
-          print('Error details: $decodedResponse');
-        }
-      } else {
-        print('Received empty response');
+        throw CustomHttpException("401");
       }
-    } catch (e) {
-      print('Error uploading deal: $e');
+
+      throw HttpException(
+          response.data?["description"] ?? "Unknown error occurred");
+    } catch (error) {
+      print("Error during deal upload: $error");
+
+      if (error is DioException) {
+        print("Dio error: ${error.response?.data}");
+        print("Status Code: ${error.response?.statusCode}");
+      }
+
+      rethrow;
     }
   }
 
-  // Future<void> uploadDeal({required bool saveToDraft}) async {
-  //   final url = Uri.parse('$baseUrl/deals/create-edit');
+  Future<void> promoteCreatedDealAsTopPick() async {
+    print("pcicc ${state.id}");
 
-  //   final creatingBusinessProfile = ref.watch(businessProfileProvider);
-  //   final token = ref.watch(accessTokenProvider);
+    final token = ref.watch(accessTokenProvider);
 
-  //   // Create the multipart request
-  //   final request = http.MultipartRequest('POST', url);
+    // Construct URL with dealId in the path
+    final url = Uri.parse("$baseUrl/set/tever-pick/${state.id}");
 
-  //   // Attach the token as an Authorization header
-  //   request.headers['Authorization'] = 'Bearer $token';
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer $token',
+        },
+      );
 
-  //   // Add text fields
-  //   request.fields['action'] = "c";
-  //   request.fields['dealTypeId'] = state.type!.id.toString();
-  //   request.fields['title'] = state.title.toString();
-  //   request.fields['categoryId'] = state.categoryId.toString();
-  //   request.fields['subCategoryId'] =
-  //       state.subCategoryId ?? state.subCategory.toString();
-  //   request.fields['description'] = state.description.toString();
-  //   request.fields['isDraft'] = saveToDraft ? "true" : "false";
-  //   request.fields['dealLong'] =
-  //       creatingBusinessProfile.address!.locationLongitude.toString();
-  //   request.fields['dealLat'] =
-  //       creatingBusinessProfile.address!.locationLatiude.toString();
-  //   request.fields['shippingToRegion'] = state.shippingToRegion.toString();
+      final responseData = jsonDecode(response.body);
 
-  //   if (!state.contactForQuote) {
-  //     request.fields['price'] = state.price!;
-  //   }
+      print("Complete Profile error res ==> $responseData");
 
-  //   // Add deal details array (variants)
-  //   if (state.varient.isNotEmpty) {
-  //     // Build a list of variant objects.
-  //     final variants = state.varient.map((variant) {
-  //       final Map<String, dynamic> variantData = {
-  //         "color": variant.color,
-  //         "size": variant.size,
-  //         "dimension": variant.dimension,
-  //         "material": variant.material,
-  //         "weight": variant.weight,
-  //       };
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return;
+      }
 
-  //       // Filter out null images and add their file names
-  //       final imagePaths = variant.images
-  //           ?.where((image) => image != null)
-  //           .map((image) => image!.path)
-  //           .toList();
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        await ref.read(accessTokenProvider.notifier).deleteToken();
+        throw CustomHttpException("401");
+      }
 
-  //       if (imagePaths != null && imagePaths.isNotEmpty) {
-  //         variantData["variantImages"] = imagePaths;
-  //       }
-  //       return variantData;
-  //     }).toList();
+      final errorMessage = responseData['message'] ??
+          responseData['error'] ??
+          "Unknown error occurred";
 
-  //     request.fields['dealDetails'] = jsonEncode(variants);
-  //   }
-
-  //   // Add shipping details as JSON text
-  //   request.fields['dealShippingDetails'] = jsonEncode({
-  //     "shippingFromCountryIds": [
-  //       if (state.shippingFromCountryId != null) state.shippingFromCountryId
-  //     ],
-  //     "shippingType": state.shippingToRegion,
-  //     "shippingToContinentIds": [
-  //       if (state.shippingToContinentId != null) state.shippingToContinentId
-  //     ],
-  //     "dealShippingToCountryIds": [
-  //       if (state.shippingToContinentId != null) state.shippingToContinentId,
-  //       ...state.selectedStates?.map((e) => e.id).toList() ?? []
-  //     ],
-  //     "shippingToStates": [
-  //       if (state.shippingToCountryId != null) state.shippingToCountryId,
-  //       ...state.selectedCountries?.map((e) => e.id).toList() ?? []
-  //     ],
-  //     if (state.showShippingRateCard)
-  //       "rate": {
-  //         "courierId": state.shippingRateCourierservice!.id,
-  //         "rate":
-  //             state.shippingRateCourierservice!.courierShippingRate as double,
-  //       }
-  //   });
-
-  //   // Combine promotion details (example: merge promotion and business profile)
-  //   final promotionData = {
-  //     "promotionTypeId": state.dealPromotionTypeId,
-  //     "promotionCode": state.dealPromotionCode,
-  //     "promotionValue": state.dealPromotionValue,
-  //     "expiryDate": state.dealPromotionValidDate,
-  //     // If you want to send the promotional material as a file, it will be added separately.
-  //     "requireCheckoutInput": state.requiredCustomerToInputCodeDuringCheckOut,
-  //     // Add business profile details:
-  //   };
-  //   request.fields['dealPromotion'] = jsonEncode(promotionData);
-
-  //   final dealContact = {
-  //     "brandName": creatingBusinessProfile.brandName,
-  //     "about": creatingBusinessProfile.aboutBusiness,
-  //     "contactEmail": creatingBusinessProfile.email,
-  //     "address": creatingBusinessProfile.address!.locationName,
-  //     "longtude": creatingBusinessProfile.address!.locationLongitude,
-  //     "latutude": creatingBusinessProfile.address!.locationLatiude,
-  //     "contactPhone": creatingBusinessProfile.phoneNumber,
-  //     "countryCode":
-  //         creatingBusinessProfile.selectedPhoneNumberCountryDetails!.phoneCode,
-  //   };
-
-  //   request.fields['dealContact'] = jsonEncode(dealContact);
-
-  //   // Add deal terms and conditions
-  //   if (state.selectedTermsAndPolicy.isNotEmpty) {
-  //     final termsAndConditions = state.selectedTermsAndPolicy.map((doc) {
-  //       return {
-  //         "typeId": doc.id,
-  //         "rawContent": doc.content,
-  //         "rawContentFile":
-  //             doc.doc != null ? doc.doc!.path.split('/').last : null,
-  //       };
-  //     }).toList();
-
-  //     request.fields['dealTnC'] = jsonEncode(termsAndConditions);
-  //   }
-
-  //   if (state.dealDetailsImages != null) {
-  //     final nonNullImages =
-  //         state.dealDetailsImages!.where((file) => file != null).toList();
-
-  //     for (int i = 0; i < nonNullImages.length; i++) {
-  //       final file = nonNullImages[i]!;
-  //       if (file.existsSync()) {
-  //         final stream = http.ByteStream(file.openRead());
-  //         final length = await file.length();
-  //         final multipartFile = http.MultipartFile(
-  //           // Use a field name your backend expects. For an array, you may use "dealImages[]" or repeat "dealImages".
-  //           'dealImages[$i]',
-  //           stream,
-  //           length,
-  //           filename: file.path.split('/').last,
-  //         );
-  //         request.files.add(multipartFile);
-  //       }
-  //     }
-  //   }
-
-  //   // 2. Promotional Material Image (if available)
-  //   if (state.dealPromotionMaterialImage != null &&
-  //       state.dealPromotionMaterialImage!.existsSync()) {
-  //     final file = state.dealPromotionMaterialImage!;
-  //     final stream = http.ByteStream(file.openRead());
-  //     final length = await file.length();
-  //     final multipartFile = http.MultipartFile(
-  //       'promotionalMaterial', // backend field name for the promotion image
-  //       stream,
-  //       length,
-  //       filename: file.path.split('/').last,
-  //     );
-  //     request.files.add(multipartFile);
-  //   }
-
-  //   // 3. Attach terms and conditions documents
-  //   for (final doc in state.selectedTermsAndPolicy) {
-  //     if (doc.doc != null && doc.doc!.existsSync()) {
-  //       final file = doc.doc!;
-  //       final stream = http.ByteStream(file.openRead());
-  //       final length = await file.length();
-  //       final multipartFile = http.MultipartFile(
-  //         'dealTnCFiles', // backend field name for the terms and conditions files
-  //         stream,
-  //         length,
-  //         filename: file.path.split('/').last,
-  //       );
-  //       request.files.add(multipartFile);
-  //     }
-  //   }
-
-  //   // Print form fields and file info for debugging
-
-  //   print('Form fields: ${request.fields}');
-  //   print('Attached files: ${request.files.map((f) => f.filename).toList()}');
-
-  //   try {
-  //     // Send the request
-  //     final response = await request.send();
-  //     final responseData = await response.stream.bytesToString();
-
-  //     // Check if the response is non-empty before decoding
-  //     if (responseData.isNotEmpty) {
-  //       try {
-  //         final decodedResponse = jsonDecode(responseData);
-  //         print('Response data: $decodedResponse');
-
-  //         if (response.statusCode == 200) {
-  //           print('Upload successful: $decodedResponse');
-  //         } else {
-  //           print('Failed to upload. Status code: ${response.statusCode}');
-  //           print('Error details: $decodedResponse');
-  //         }
-  //       } catch (e) {
-  //         print('Error decoding response: $e');
-  //         print('Raw response: $responseData');
-  //       }
-  //     } else {
-  //       print('Received empty response');
-  //     }
-  //   } catch (e) {
-  //     print('Error uploading deal: $e');
-  //   }
-  // }
+      throw CustomHttpException(errorMessage);
+    } catch (error) {
+      print("Complete Profile error ==> ${error.toString()}");
+      rethrow;
+    }
+  }
 }
 
 final newDealDataProvider =

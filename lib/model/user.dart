@@ -2,6 +2,7 @@ import 'package:tever/model/coordinate.dart';
 
 class User {
   bool? hasSetupCheckList;
+  bool? hasCreatedABusiness;
   bool? isEmailVerified;
   bool? isPhoneNumberVerified;
   String? firstName;
@@ -36,6 +37,7 @@ class User {
 
   User({
     this.hasSetupCheckList,
+    this.hasCreatedABusiness,
     this.firstName,
     this.lastName,
     this.email,
@@ -72,6 +74,7 @@ class User {
   factory User.defaultState() {
     return User(
       hasSetupCheckList: false,
+      hasCreatedABusiness: false,
       firstName: null,
       lastName: null,
       email: null,
@@ -107,6 +110,7 @@ class User {
   }
 
   User copyWith({
+    bool? hasCreatedABusiness,
     bool? hasSetupCheckList,
     String? firstName,
     String? lastName,
@@ -143,44 +147,46 @@ class User {
     bool? isPhoneNumberVerified,
   }) {
     return User(
-        hasSetupCheckList: hasSetupCheckList ?? this.hasSetupCheckList,
-        firstName: firstName ?? this.firstName,
-        lastName: lastName ?? this.lastName,
-        email: email ?? this.email,
-        phoneNumber: phoneNumber ?? this.phoneNumber,
-        businessName: businessName ?? this.businessName,
-        storeName: storeName ?? this.storeName,
-        businessLogo: businessLogo ?? this.businessLogo,
-        userPlan: userPlan ?? this.userPlan,
-        isFirstTime: isFirstTime ?? this.isFirstTime,
-        is2FASet: is2FASet ?? this.is2FASet,
-        isAffiliate: isAffiliate ?? this.isAffiliate,
-        isSocialLogin: isSocialLogin ?? this.isSocialLogin,
-        isRequiredToSetPassword:
-            isRequiredToSetPassword ?? this.isRequiredToSetPassword,
-        showNotificationPreview:
-            showNotificationPreview ?? this.showNotificationPreview,
-        playSoundNotification:
-            playSoundNotification ?? this.playSoundNotification,
-        phoneVerificationEnabled:
-            phoneVerificationEnabled ?? this.phoneVerificationEnabled,
-        emailVerificationEnabled:
-            emailVerificationEnabled ?? this.emailVerificationEnabled,
-        receiveEmailNotif: receiveEmailNotif ?? this.receiveEmailNotif,
-        receiveSmsNotif: receiveSmsNotif ?? this.receiveSmsNotif,
-        receiveInAppNotif: receiveInAppNotif ?? this.receiveInAppNotif,
-        isUserBlacklisted: isUserBlacklisted ?? this.isUserBlacklisted,
-        businessDetails: businessDetails ?? this.businessDetails,
-        bankDetails: bankDetails ?? this.bankDetails,
-        percentageCompleted: percentageCompleted ?? this.percentageCompleted,
-        totalSalesTillDate: totalSalesTillDate ?? this.totalSalesTillDate,
-        planExpiryDate: planExpiryDate ?? this.planExpiryDate,
-        preferences: preferences ?? this.preferences,
-        kycStatus: kycStatus ?? this.kycStatus,
-        currentAddress: currentAddress ?? this.currentAddress,
-        isEmailVerified: isEmailVerified ?? this.isEmailVerified,
-        isPhoneNumberVerified:
-            isPhoneNumberVerified ?? this.isPhoneNumberVerified);
+      hasSetupCheckList: hasSetupCheckList ?? this.hasSetupCheckList,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      email: email ?? this.email,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      businessName: businessName ?? this.businessName,
+      storeName: storeName ?? this.storeName,
+      businessLogo: businessLogo ?? this.businessLogo,
+      userPlan: userPlan ?? this.userPlan,
+      isFirstTime: isFirstTime ?? this.isFirstTime,
+      is2FASet: is2FASet ?? this.is2FASet,
+      isAffiliate: isAffiliate ?? this.isAffiliate,
+      isSocialLogin: isSocialLogin ?? this.isSocialLogin,
+      isRequiredToSetPassword:
+          isRequiredToSetPassword ?? this.isRequiredToSetPassword,
+      showNotificationPreview:
+          showNotificationPreview ?? this.showNotificationPreview,
+      playSoundNotification:
+          playSoundNotification ?? this.playSoundNotification,
+      phoneVerificationEnabled:
+          phoneVerificationEnabled ?? this.phoneVerificationEnabled,
+      emailVerificationEnabled:
+          emailVerificationEnabled ?? this.emailVerificationEnabled,
+      receiveEmailNotif: receiveEmailNotif ?? this.receiveEmailNotif,
+      receiveSmsNotif: receiveSmsNotif ?? this.receiveSmsNotif,
+      receiveInAppNotif: receiveInAppNotif ?? this.receiveInAppNotif,
+      isUserBlacklisted: isUserBlacklisted ?? this.isUserBlacklisted,
+      businessDetails: businessDetails ?? this.businessDetails,
+      bankDetails: bankDetails ?? this.bankDetails,
+      percentageCompleted: percentageCompleted ?? this.percentageCompleted,
+      totalSalesTillDate: totalSalesTillDate ?? this.totalSalesTillDate,
+      planExpiryDate: planExpiryDate ?? this.planExpiryDate,
+      preferences: preferences ?? this.preferences,
+      kycStatus: kycStatus ?? this.kycStatus,
+      currentAddress: currentAddress ?? this.currentAddress,
+      isEmailVerified: isEmailVerified ?? this.isEmailVerified,
+      isPhoneNumberVerified:
+          isPhoneNumberVerified ?? this.isPhoneNumberVerified,
+      hasCreatedABusiness: hasCreatedABusiness ?? this.hasCreatedABusiness,
+    );
   }
 
   User.fromJson(Map<String, dynamic> jsonData) {
@@ -218,5 +224,6 @@ class User {
     isPhoneNumberVerified = jsonData['user']['isPhoneVerified'] is bool
         ? jsonData['user']['isPhoneVerified'] as bool
         : false;
+    hasCreatedABusiness = jsonData['businessDetails'] != null;
   }
 }

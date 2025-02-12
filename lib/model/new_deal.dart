@@ -4,6 +4,7 @@ import 'package:tever/model/common.dart';
 import 'package:tever/model/coordinate.dart';
 
 class NewDeal {
+  int? id;
   CommonType? type;
   List<CommonType> colors;
   List<CommonType> materials;
@@ -20,6 +21,7 @@ class NewDeal {
   String? dealPromotionType;
   String? dealPromotionTypeId;
   String? dealPromotionValue;
+  bool? isPromotionValueAPercentage;
   String? dealPromotionCode;
   String? dealPromotionValidDate;
   String? dealPromotionAffliateMarketingEarningValue;
@@ -54,6 +56,8 @@ class NewDeal {
   bool hasCreatedABussinessProfile;
 
   NewDeal({
+    this.id,
+    required this.isPromotionValueAPercentage,
     required this.hasCreatedABussinessProfile,
     required this.type,
     required this.colors,
@@ -107,6 +111,7 @@ class NewDeal {
     return NewDeal(
       type: dealTypeDropdownItems[0],
       hasCreatedABussinessProfile: false,
+      isPromotionValueAPercentage: false,
       categoryId: null,
       subCategoryId: null,
       category: null,
@@ -202,6 +207,8 @@ class NewDeal {
   }
 
   NewDeal copyWith({
+    int? id,
+    bool? isPromotionValueAPercentage,
     CommonType? type,
     List<CommonType>? allCountries,
     String? categoryId,
@@ -262,6 +269,9 @@ class NewDeal {
     bool? hasCreatedABussinessProfile,
   }) {
     return NewDeal(
+      id: id ?? this.id,
+      isPromotionValueAPercentage:
+          isPromotionValueAPercentage ?? this.isPromotionValueAPercentage,
       type: type ?? this.type,
       categoryId: categoryId ?? this.categoryId,
       subCategoryId: subCategoryId ?? this.subCategoryId,

@@ -90,6 +90,8 @@ class _CheckAndConfirmState extends ConsumerState<CheckAndConfirm> {
 
     final price = double.tryParse(newDealData.price.toString()) ?? 0.0;
 
+    DateTime dateTime = DateTime.parse(newDealData.dealPromotionValidDate!);
+
     return Column(
       children: [
         Padding(
@@ -483,7 +485,7 @@ class _CheckAndConfirmState extends ConsumerState<CheckAndConfirm> {
                         ),
                         CheckAndConfirmCard(
                           label: "Valid till",
-                          value: newDealData.dealPromotionValidDate.toString(),
+                          value: DateFormat("d MMMM, yyyy").format(dateTime),
                         ),
                       ]),
                 Divider(

@@ -4,6 +4,11 @@ class InputValidationController {
     return pattern.hasMatch(value);
   }
 
+  bool validateOnlyNumbers(String value) {
+    final pattern = RegExp(r'^\d+$');
+    return pattern.hasMatch(value);
+  }
+
   String capitalizeFirstLetter(String input) {
     if (input.isEmpty) return input;
     return input[0].toUpperCase() + input.substring(1);

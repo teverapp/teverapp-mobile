@@ -1,19 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tever/controller/new_deal_controller.dart';
 import 'package:tever/helpers/custom_colors.dart';
+import 'package:tever/view/screens/tabs_screen.dart';
 import 'package:tever/view/widgets/general/common/enter_address_labeled_text_field.dart';
 import 'package:tever/view/widgets/general/common/rotate_image.dart';
+import 'package:tever/view/widgets/new_deal_screen.dart/promote_as_tever_top_pick.dart';
 import 'package:tever/view/widgets/sign_up_screen/email_input.dart';
 import 'package:tever/view/widgets/sign_up_screen/phone_input.dart';
 
-class PreLiveCheck extends StatefulWidget {
+class PreLiveCheck extends ConsumerStatefulWidget {
   const PreLiveCheck({super.key});
 
   @override
-  State<PreLiveCheck> createState() => _PreLiveCheckState();
+  ConsumerState<PreLiveCheck> createState() => _PreLiveCheckState();
 }
 
-class _PreLiveCheckState extends State<PreLiveCheck> {
+class _PreLiveCheckState extends ConsumerState<PreLiveCheck> {
   final CustomColors _customColor = const CustomColors();
+
+  void _navigate(Widget screen) {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => screen,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,23 +110,7 @@ class _PreLiveCheckState extends State<PreLiveCheck> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Image.asset(
-                      "assets/icon/radio_circular_inactive.png",
-                      height: 20,
-                      width: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      "Promote deal as Tever's top pick",
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: _customColor.custom242424,
-                          fontWeight: FontWeight.w500),
-                    )
-                  ],
-                ),
+                const PromoteAsTeverTopPick(),
                 const SizedBox(height: 19),
                 Container(
                   height: 25,
@@ -146,7 +142,11 @@ class _PreLiveCheckState extends State<PreLiveCheck> {
             height: 48,
             width: double.infinity,
             child: OutlinedButton(
-                onPressed: () {}, //widget.edit,
+                onPressed: () {
+                  _navigate(const TabsScreen(
+                    refetchUserData: true,
+                  ));
+                },
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: theme.colorScheme.primary, width: 1),
                   shape: RoundedRectangleBorder(
@@ -154,7 +154,7 @@ class _PreLiveCheckState extends State<PreLiveCheck> {
                   ),
                 ),
                 child: Text(
-                  "Back",
+                  "Close",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,

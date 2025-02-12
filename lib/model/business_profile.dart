@@ -8,7 +8,9 @@ class BusinessProfile {
   String businessName;
   String brandName;
   String? businessType;
+  String? businessTypeId;
   String? industry;
+  String? industryId;
   Coordinate? address;
   CommonType tiktokUrl;
   CommonType twitterUrl;
@@ -27,7 +29,9 @@ class BusinessProfile {
     required this.businessName,
     required this.brandName,
     required this.businessType,
+    required this.businessTypeId,
     required this.industry,
+    required this.industryId,
     required this.address,
     required this.tiktokUrl,
     required this.twitterUrl,
@@ -48,7 +52,9 @@ class BusinessProfile {
       businessName: "",
       brandName: "",
       businessType: null,
+      businessTypeId: null,
       industry: null,
+      industryId: null,
       address: null,
       tiktokUrl: CommonType(name: ""),
       instagramUrl: CommonType(name: ""),
@@ -69,7 +75,9 @@ class BusinessProfile {
     String? businessName,
     String? brandName,
     String? businessType,
+    String? businessTypeId,
     String? industry,
+    String? industryId,
     Coordinate? address,
     CommonType? tiktokUrl,
     CommonType? twitterUrl,
@@ -88,7 +96,9 @@ class BusinessProfile {
       businessName: businessName ?? this.businessName,
       brandName: brandName ?? this.brandName,
       businessType: businessType ?? this.businessType,
+      businessTypeId: businessTypeId ?? this.businessTypeId,
       industry: industry ?? this.industry,
+      industryId: industryId ?? this.industryId,
       address: address ?? this.address,
       tiktokUrl: tiktokUrl ?? this.tiktokUrl,
       twitterUrl: twitterUrl ?? this.twitterUrl,

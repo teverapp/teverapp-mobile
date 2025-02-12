@@ -16,8 +16,6 @@ class AppResourceControllerNotifier extends StateNotifier<AppResource> {
   final Ref ref;
 
   Future<void> fetchResources({required String type, dynamic id}) async {
-    print("fetchAppResourceDetailsCategory called");
-
     final queryParam = type;
 
     // final queryParam = type == DealsDropList.dealCategories.value
@@ -42,6 +40,8 @@ class AppResourceControllerNotifier extends StateNotifier<AppResource> {
                 : type == DealsDropList.dealSubcategories.value
                     ? id
                     : "";
+
+    print("fetchAppResourceDetailsCategory called resourceId $resourceId");
 
     final url =
         Uri.parse("$baseUrl/util/resource/get").replace(queryParameters: {
@@ -118,6 +118,11 @@ class AppResourceControllerNotifier extends StateNotifier<AppResource> {
   void resetFetchedCountries() {
     print("reset callled");
     state = state.copyWith(fetchedCountries: []);
+  }
+
+  void resetFetchedDealDetailsSubCategory() {
+    print("reset callled");
+    state = state.copyWith(fetchedDealDetailsSubCategory: []);
   }
 
   void addToSubCategoryList({required CommonType subCat}) {

@@ -31,6 +31,10 @@ class _NewDealsCategoryBottomSheetState
 
     ref.read(newDealDataProvider.notifier).updateNewDeal("category", value);
 
+    ref.read(newDealDataProvider.notifier).resetSelectedSubCategory();
+
+    ref.read(appResourceProvider.notifier).resetFetchedDealDetailsSubCategory();
+
     if (ModalRoute.of(context)?.isCurrent == true) {
       Navigator.of(context).pop();
     }

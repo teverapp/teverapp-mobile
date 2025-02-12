@@ -106,6 +106,8 @@ extension NewDealUpdate on NewDeal {
         return copyWith(contactInfoAddress: value);
       case "hasCreatedABussinessProfile":
         return copyWith(hasCreatedABussinessProfile: value);
+      case "isPromotionValueAPercentage":
+        return copyWith(isPromotionValueAPercentage: value);
       default:
         throw Exception("Invalid key: $key");
     }

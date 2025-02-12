@@ -103,6 +103,8 @@ class GetStartedChecklist extends ConsumerWidget {
     final bool isProfileComplete =
         userData.isEmailVerified! && userData.isPhoneNumberVerified!;
 
+    final bool hasCreatedABusiness = userData.hasCreatedABusiness ?? false;
+
     return Container(
       padding: const EdgeInsets.only(top: 20, left: 16, right: 16, bottom: 16),
       margin: const EdgeInsets.only(bottom: 24),
@@ -142,7 +144,7 @@ class GetStartedChecklist extends ConsumerWidget {
                   ? "Profile completed"
                   : "Complete your profile",
               subTitle:
-                  isProfileComplete ? "Awesome!" : "Let’s get to know you"),
+                  isProfileComplete ? "Awesome!" : "Let's get to know you"),
           const SizedBox(height: 8),
           _buildCard(
               onTap: () => _navigate(const SetupTeverWalletScreen(), context),
@@ -158,9 +160,11 @@ class GetStartedChecklist extends ConsumerWidget {
                     isCreatedFromNewDeals: false,
                   ),
                   context),
-              isCompleted: false,
-              icon: "shop_add.png",
-              iconBgColor: _customColors.customE5F0F9,
+              isCompleted: hasCreatedABusiness,
+              icon: hasCreatedABusiness ? "shop_add_green.png" : "shop_add.png",
+              iconBgColor: hasCreatedABusiness
+                  ? _customColors.customD2F9E7
+                  : _customColors.customE5F0F9,
               title: "Add a business",
               subTitle: "Set up an online storefront"),
         ],

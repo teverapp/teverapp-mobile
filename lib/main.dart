@@ -2,31 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tever/view/screens/ads_details_screen.dart';
-import 'package:tever/view/screens/bank_transfer_screen.dart';
-import 'package:tever/view/screens/complete_your_profile_screen.dart';
-import 'package:tever/view/screens/create_your_business_profile_screen.dart';
-import 'package:tever/view/screens/error_screen.dart';
-import 'package:tever/view/screens/event_published_successfully_screen.dart';
-import 'package:tever/view/screens/forgot_password_screen.dart';
-import 'package:tever/view/screens/get_started_screen.dart';
-import 'package:tever/view/screens/leader_board_screen.dart';
-import 'package:tever/view/screens/new_deal_screen.dart';
-import 'package:tever/view/screens/new_event_screen.dart';
-import 'package:tever/view/screens/onboarding_screen.dart';
-import 'package:tever/view/screens/otp_screen.dart';
-import 'package:tever/view/screens/password_reset_successfully_screen.dart';
+import 'package:tever/view/screens/spaces_screen.dart';
 import 'package:tever/view/screens/splash_screen.dart';
-import 'package:tever/view/screens/waiting_screen.dart';
-import 'package:tever/view/screens/product_item_details_screen.dart';
-import 'package:tever/view/screens/profile_details_screen.dart';
-import 'package:tever/view/screens/reset_password_screen.dart';
-import 'package:tever/view/screens/setup_tever_wallet_screen.dart';
-import 'package:tever/view/screens/sign_in_screen.dart';
-import 'package:tever/view/screens/sign_up_screen.dart';
-import 'package:tever/view/screens/tabs_screen.dart';
-import 'package:tever/view/screens/wallet_details_screen.dart';
-import 'package:tever/view/screens/wallet_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

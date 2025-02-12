@@ -43,6 +43,11 @@ class _NewDealDetailsState extends ConsumerState<NewDealDetails> {
 
   final TextEditingController _dimensionController = TextEditingController();
 
+  final TextEditingController _durationController = TextEditingController();
+
+  final TextEditingController _noOfRoomsForCleaningController =
+      TextEditingController();
+
   String? _dealSubCategoryListErrorMessage;
 
   bool _dealSubCategoryListIsLoading = false;
@@ -70,17 +75,17 @@ class _NewDealDetailsState extends ConsumerState<NewDealDetails> {
   //   ref.read(newDealDataProvider.notifier).updateNewDeal("category", value);
   // }
 
-  void _selectNoOfRoomsForCleaning(
-      {required String value, required String id, String? imageUrl}) {
-    ref
-        .read(newDealDataProvider.notifier)
-        .updateNewDeal("noOfRoomsForCleaning", value);
-  }
+  // void _selectNoOfRoomsForCleaning(
+  //     {required String value, required String id, String? imageUrl}) {
+  //   ref
+  //       .read(newDealDataProvider.notifier)
+  //       .updateNewDeal("noOfRoomsForCleaning", value);
+  // }
 
-  void _selectDuration(
-      {required String value, required String id, String? imageUrl}) {
-    ref.read(newDealDataProvider.notifier).updateNewDeal("duration", value);
-  }
+  // void _selectDuration(
+  //     {required String value, required String id, String? imageUrl}) {
+  //   ref.read(newDealDataProvider.notifier).updateNewDeal("duration", value);
+  // }
 
   void _toggleContactForQuote() {
     final newDealData = ref.watch(newDealDataProvider);
@@ -151,6 +156,10 @@ class _NewDealDetailsState extends ConsumerState<NewDealDetails> {
     _capacityController.dispose();
 
     _dimensionController.dispose();
+
+    _durationController.dispose();
+
+    _noOfRoomsForCleaningController.dispose();
   }
 
   @override
@@ -168,6 +177,11 @@ class _NewDealDetailsState extends ConsumerState<NewDealDetails> {
       _capacityController.text = newDealData.capacity ?? "";
 
       _dimensionController.text = newDealData.dimension ?? "";
+
+      _durationController.text = newDealData.duration ?? "";
+
+      _noOfRoomsForCleaningController.text =
+          newDealData.noOfRoomsForCleaning ?? "";
 
       // if (newDealData.dealDetailsCategory.isEmpty) {
       //   _fetchDealCategoryList();
@@ -342,9 +356,11 @@ class _NewDealDetailsState extends ConsumerState<NewDealDetails> {
                 const SizedBox(height: 5),
 
                 CustomInputSelectionButton(
-                  hasSelected: newDealData.subCategoryId != null,
+                  hasSelected: newDealData.subCategoryId != null &&
+                      newDealData.subCategoryId != "",
                   onTap: _showSubCategoryBottomSheet,
-                  selectedItem: newDealData.subCategoryId != null
+                  selectedItem: newDealData.subCategoryId != null &&
+                          newDealData.subCategoryId != ""
                       ? newDealData.subCategory.toString()
                       : "Select sub category",
                 ),
@@ -642,53 +658,6 @@ class _NewDealDetailsState extends ConsumerState<NewDealDetails> {
                     ),
                   ),
                 ],
-                // TextFormField(
-                //   style: TextStyle(
-                //     color: _customColor.custom242424,
-                //     fontSize: 14,
-                //   ),
-                //   keyboardType: TextInputType.number,
-                //   inputFormatters: [
-                //     FilteringTextInputFormatter.digitsOnly,
-                //   ],
-                //   decoration: InputDecoration(
-                //     hintText: "₦0",
-                //     filled: true,
-                //     fillColor: Colors.white,
-                //     contentPadding: const EdgeInsets.all(16),
-                //     focusedBorder: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(12),
-                //       borderSide: BorderSide(
-                //         color: _customColor.customEFEFEF,
-                //         width: 1,
-                //       ),
-                //     ),
-                //     enabledBorder: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(12),
-                //       borderSide: BorderSide(
-                //         color: _customColor.customEFEFEF,
-                //         width: 1,
-                //       ),
-                //     ),
-                //     border: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(12),
-                //       borderSide: BorderSide(
-                //         color: _customColor.customEFEFEF,
-                //         width: 1,
-                //       ),
-                //     ),
-                //     errorBorder: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(12),
-                //       borderSide: const BorderSide(width: 1),
-                //     ),
-                //     hintStyle: TextStyle(
-                //       fontSize: 14,
-                //       fontWeight: FontWeight.w400,
-                //       color: _customColor.custom888888,
-                //     ),
-                //   ),
-                //   onChanged: (value) async {},
-                // ),
                 if (showQuote) ...[
                   const SizedBox(height: 7),
                   Row(
@@ -719,14 +688,63 @@ class _NewDealDetailsState extends ConsumerState<NewDealDetails> {
                     ),
                   ),
                   const SizedBox(height: 9),
-                  CustomDropDown(
-                    hasSelected: newDealData.duration != null,
-                    dropdownItems: dealTypeDropdownItems,
-                    selectItem: _selectDuration,
-                    selectedItem: newDealData.duration != null
-                        ? newDealData.duration.toString()
-                        : "Select number of rooms",
+                  TextField(
+                    controller: _durationController,
+                    style: TextStyle(
+                      color: _customColor.custom242424,
+                      fontSize: 14,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: "Enter duration",
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 5),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: _customColor.customEFEFEF,
+                          width: 1,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: _customColor.customEFEFEF,
+                          width: 1,
+                        ),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: _customColor.customEFEFEF,
+                          width: 1,
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(width: 1),
+                      ),
+                      hintStyle: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: _customColor.custom888888,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      ref
+                          .read(newDealDataProvider.notifier)
+                          .updateNewDeal("duration", value);
+                    },
                   ),
+                  // CustomDropDown(
+                  //   hasSelected: newDealData.duration != null,
+                  //   dropdownItems: dealTypeDropdownItems,
+                  //   selectItem: _selectDuration,
+                  //   selectedItem: newDealData.duration != null
+                  //       ? newDealData.duration.toString()
+                  //       : "Select number of rooms",
+                  // ),
                   const SizedBox(height: 16),
                   Text(
                     "No of rooms for cleaning",
@@ -737,14 +755,63 @@ class _NewDealDetailsState extends ConsumerState<NewDealDetails> {
                     ),
                   ),
                   const SizedBox(height: 9),
-                  CustomDropDown(
-                    hasSelected: newDealData.noOfRoomsForCleaning != null,
-                    dropdownItems: dealTypeDropdownItems,
-                    selectItem: _selectNoOfRoomsForCleaning,
-                    selectedItem: newDealData.noOfRoomsForCleaning != null
-                        ? newDealData.noOfRoomsForCleaning.toString()
-                        : "Select number of rooms",
+                  TextField(
+                    controller: _noOfRoomsForCleaningController,
+                    style: TextStyle(
+                      color: _customColor.custom242424,
+                      fontSize: 14,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: "Enter number of rooms for cleaning",
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 5),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: _customColor.customEFEFEF,
+                          width: 1,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: _customColor.customEFEFEF,
+                          width: 1,
+                        ),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: _customColor.customEFEFEF,
+                          width: 1,
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(width: 1),
+                      ),
+                      hintStyle: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: _customColor.custom888888,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      ref
+                          .read(newDealDataProvider.notifier)
+                          .updateNewDeal("noOfRoomsForCleaning", value);
+                    },
                   ),
+                  // CustomDropDown(
+                  //   hasSelected: newDealData.noOfRoomsForCleaning != null,
+                  //   dropdownItems: dealTypeDropdownItems,
+                  //   selectItem: _selectNoOfRoomsForCleaning,
+                  //   selectedItem: newDealData.noOfRoomsForCleaning != null
+                  //       ? newDealData.noOfRoomsForCleaning.toString()
+                  //       : "Select number of rooms",
+                  // ),
                 ],
                 if (newDealData.varient.isNotEmpty &&
                     newDealData.type!.name ==
